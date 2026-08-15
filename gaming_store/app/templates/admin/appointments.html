@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Manage Appointments - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-calendar me-2"></i>Manage Appointments</h2>
+            </div>
+
+            <!-- Status Filters -->
+            <div class="card border-0 shadow-sm glass-card mb-4">
+                <div class="card-body py-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('admin.appointments') }}" class="btn btn-sm {{ 'btn-primary' if not current_status else 'btn-outline-primary' }}">All</a>
+                        <a href="{{ url_for('admin.appointments', status='PENDING') }}" class="btn btn-sm {{ 'btn-warning' if current_status == 'PENDING' else 'btn-outline-warning' }}">Pending</a>
+                        <a href="{{ url_for('admin.appointments', status='CONFIRMED') }}" class="btn btn-sm {{ 'btn-info' if current_status == 'CONFIRMED' else 'btn-outline-info' }}">Confirmed</a>
+                        <a href="{{ url_for('admin.appointments', status='PROCESSING') }}" class="btn btn-sm {{ 'btn-secondary' if current_status == 'PROCESSING' else 'btn-outline-secondary' }}">Processing</a>
+                        <a href="{{ url_for('admin.appointments', status='COMPLETED') }}" class="btn btn-sm {{ 'btn-success' if current_status == 'COMPLETED' else 'btn-outline-success' }}">Completed</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Booking #</th>
+                                    <th>Customer</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Technician</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appt in appointments.items %}
+                                <tr>
+                                    <td><strong>{{ appt.booking_number }}</strong></td>
+                                    <td>{{ appt.customer.full_name }}</td>
+                                    <td>{{ appt.service.name }}</td>
+                                    <td>{{ appt.booking_date.strftime('%b %d, %Y') }} {{ appt.booking_time }}</td>
+                                    <td>{{ appt.technician.user.full_name if appt.technician else 'Unassigned' }}</td>
+                                    <td><span class="badge bg-{{ 'success' if appt.status == 'COMPLETED' else 'primary' if appt.status == 'CONFIRMED' else 'warning' if appt.status == 'PENDING' else 'info' }}">{{ appt.status }}</span></td>
+                                    <td>
+                                        <a href="{{ url_for('admin.appointment_detail', appt_id=appt.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not appointments.items %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No appointments found</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if appointments.pages > 1 %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if appointments.has_prev %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('admin.appointments', page=appointments.prev_num, status=current_status) }}"><i class="fas fa-chevron-left"></i></a></li>
+                    {% endif %}
+                    {% for p in appointments.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if p %}
+                    <li class="page-item {{ 'active' if p == appointments.page }}"><a class="page-link" href="{{ url_for('admin.appointments', page=p, status=current_status) }}">{{ p }}</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if appointments.has_next %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('admin.appointments', page=appointments.next_num, status=current_status) }}"><i class="fas fa-chevron-right"></i></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

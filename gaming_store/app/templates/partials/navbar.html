@@ -1,0 +1,87 @@
+<nav class="navbar navbar-expand-lg navbar-light navbar-glass fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.home') }}">
+            <div class="brand-icon me-2">
+                <img src="{{ url_for('static', filename='GAME ZONE LOGO.WEB.webp') }}" alt="GameZone Logo" id="logo-image" style="width: 40px; height: 40px; object-fit: contain; cursor-pointer; transition: transform 0.3s;">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <span class="brand-text">Game<span class="brand-accent">Zone</span></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link {% if request.endpoint == 'main.home' %}active{% endif %}" href="{{ url_for('main.home') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint == 'products.listing' %}active{% endif %}" href="{{ url_for('products.listing') }}">Products</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint == 'services.listing' %}active{% endif %}" href="{{ url_for('services.listing') }}">Services</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}" href="{{ url_for('main.about') }}">About</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}" href="{{ url_for('main.contact') }}">Contact</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <form class="search-form d-none d-lg-flex" action="{{ url_for('products.listing') }}" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control search-input" placeholder="Search products..." value="{{ request.args.get('q', '') }}">
+                        <button class="btn search-btn" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('customer.wishlist') }}" class="nav-icon-btn position-relative">
+                    <i class="fas fa-heart"></i>
+                    {% if wishlist_count > 0 %}<span class="badge badge-glow">{{ wishlist_count }}</span>{% endif %}
+                </a>
+                <a href="{{ url_for('products.cart') }}" class="nav-icon-btn position-relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if cart_count > 0 %}<span class="badge badge-glow">{{ cart_count }}</span>{% endif %}
+                </a>
+                <div class="dropdown">
+                    <button class="btn user-btn dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span class="d-none d-lg-inline">{{ current_user.first_name }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end glass-dropdown">
+                        <li><span class="dropdown-item-text text-muted small">{{ current_user.email }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% if current_user.is_admin %}
+                        <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Admin Panel</a></li>
+                        {% elif current_user.is_staff %}
+                        <li><a class="dropdown-item" href="{{ url_for('staff.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Staff Panel</a></li>
+                        {% elif current_user.is_technician_role %}
+                        <li><a class="dropdown-item" href="{{ url_for('technician.dashboard') }}"><i class="fas fa-user-wrench me-2"></i>Technician Panel</a></li>
+                        {% else %}
+                        <li><a class="dropdown-item" href="{{ url_for('customer.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>My Dashboard</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('customer.orders') }}"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{{ url_for('staff.staff_login') }}" class="btn btn-outline-light btn-sm"><i class="fas fa-user-shield me-1"></i>Staff</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary-glow btn-sm">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-sm">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+<div style="height:70px;"></div>
+
+<script>
+document.getElementById('logo-image').addEventListener('click', function() {
+    if (this.classList.contains('zoomed')) {
+        this.classList.remove('zoomed');
+    } else {
+        this.classList.add('zoomed');
+    }
+});
+</script>
+
+<style>
+.zoomed {
+    transform: scale(3);
+    width: auto;
+    height: auto;
+}
+</style>

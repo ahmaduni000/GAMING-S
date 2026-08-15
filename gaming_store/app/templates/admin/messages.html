@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Contact Messages - GameZone Hub{% endblock %}
+
+{% block content %}<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-envelope me-2"></i>Contact Messages</h2>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    {% for msg in messages %}
+                    <div class="border rounded p-3 mb-3 {{ 'bg-light' if not msg.is_read }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1">
+                                    {{ msg.name }}
+                                    {% if not msg.is_read %}
+                                    <span class="badge bg-primary ms-2">New</span>
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">{{ msg.email }} | {{ msg.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                            </div>
+                            {% if not msg.is_read %}
+                            <button class="btn btn-sm btn-outline-success" onclick="markRead({{ msg.id }}, this)">
+                                <i class="fas fa-check"></i> Mark Read
+                            </button>
+                            {% endif %}
+                        </div>
+                        <div class="mt-2">
+                            <strong>Subject:</strong> {{ msg.subject }}
+                            <p class="mb-0 mt-1">{{ msg.message }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not messages %}
+                    <p class="text-muted text-center py-4">No messages</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function markRead(id, btn) {
+    fetch('/admin/messages/' + id + '/read', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token() }}'}})
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            btn.closest('.border').classList.remove('bg-light');
+            btn.remove();
+        }
+    });
+}
+</script>
+{% endblock %}

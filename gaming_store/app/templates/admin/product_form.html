@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-box me-2"></i>{{ title }}</h2>
+                <a href="{{ url_for('admin.products') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Products
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Product Name</label>
+                                    {{ form.name(class="form-control", placeholder="Enter product name") }}
+                                    {% for error in form.name.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">SKU</label>
+                                    {{ form.sku(class="form-control", placeholder="SKU code") }}
+                                    {% for error in form.sku.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description</label>
+                                    {{ form.description(class="form-control", rows="4", placeholder="Product description...") }}
+                                    {% for error in form.description.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Features</label>
+                                    {{ form.features(class="form-control", rows="3", placeholder="Key features...") }}
+                                    {% for error in form.features.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Category</label>
+                                    {{ form.category_id(class="form-select") }}
+                                    {% for error in form.category_id.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Brand</label>
+                                    {{ form.brand(class="form-control", placeholder="Brand name") }}
+                                    {% for error in form.brand.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Weight (kg)</label>
+                                    {{ form.weight(class="form-control", placeholder="0.0") }}
+                                    {% for error in form.weight.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Price</label>
+                                    {{ form.price(class="form-control", placeholder="0.00") }}
+                                    {% for error in form.price.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Discount Price</label>
+                                    {{ form.discount_price(class="form-control", placeholder="0.00") }}
+                                    {% for error in form.discount_price.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Stock Quantity</label>
+                                    {{ form.stock_quantity(class="form-control") }}
+                                    {% for error in form.stock_quantity.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Low Stock Threshold</label>
+                                    {{ form.low_stock_threshold(class="form-control") }}
+                                    {% for error in form.low_stock_threshold.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Product Images</label>
+                                    <input type="file" name="images" class="form-control" multiple accept="image/*">
+                                    <small class="text-muted">Select multiple images. First image will be primary.</small>
+                                </div>
+                            </div>
+
+                            {% if product and product.images.all() %}
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Current Images</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for img in product.images.all() %}
+                                    <div class="position-relative">
+                                        <img src="{{ img.image_url }}" class="rounded" style="width:80px;height:80px;object-fit:cover;" alt="">
+                                        {% if img.is_primary %}
+                                        <span class="badge bg-primary position-absolute top-0 end-0" style="font-size:0.6rem;">Primary</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-12">
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_active(class="form-check-input") }}
+                                            <label class="form-check-label fw-bold">Active</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_featured(class="form-check-input") }}
+                                            <label class="form-check-label fw-bold">Featured</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_new_arrival(class="form-check-input") }}
+                                            <label class="form-check-label fw-bold">New Arrival</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_bestseller(class="form-check-input") }}
+                                            <label class="form-check-label fw-bold">Bestseller</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-1"></i>{{ 'Update' if product else 'Create' }} Product
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

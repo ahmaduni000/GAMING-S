@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if tech else 'Add' }} Technician - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-user-wrench me-2"></i>{{ 'Edit' if tech else 'Add' }} Technician</h2>
+                <a href="{{ url_for('admin.technicians') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Technicians
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <div class="row g-3">
+                            {% if not tech %}
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Select User</label>
+                                    {{ form.user_id(class="form-select") }}
+                                    {% for error in form.user_id.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Skills</label>
+                                    {{ form.skills(class="form-control", placeholder="e.g. PC Repair, Console Modding") }}
+                                    {% for error in form.skills.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Experience (Years)</label>
+                                    {{ form.experience_years(class="form-control") }}
+                                    {% for error in form.experience_years.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hourly Rate</label>
+                                    {{ form.hourly_rate(class="form-control", placeholder="0.00") }}
+                                    {% for error in form.hourly_rate.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Bio</label>
+                                    {{ form.bio(class="form-control", rows="4", placeholder="About this technician...") }}
+                                    {% for error in form.bio.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <hr>
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_available(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Available for Assignments</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-1"></i>{{ 'Update' if tech else 'Create' }} Technician
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

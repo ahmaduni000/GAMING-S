@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}My Appointments - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">{% include 'customer/sidebar.html' %}</div>
+            <div class="col-lg-9">
+                <h3 class="mb-4">My Appointments</h3>
+                <div class="d-flex gap-2 mb-4 flex-wrap">
+                    <a href="{{ url_for('customer.appointments') }}" class="btn btn-sm {% if not current_status %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                    {% for s in ['PENDING','CONFIRMED','ASSIGNED','PROCESSING','COMPLETED','CANCELLED'] %}
+                    <a href="{{ url_for('customer.appointments', status=s) }}" class="btn btn-sm {% if current_status == s %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ s }}</a>
+                    {% endfor %}
+                </div>
+                {% if appointments.items %}
+                {% for appt in appointments.items %}
+                <div class="card glass-card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-3"><strong>{{ appt.booking_number }}</strong><br><small class="text-muted">{{ appt.booking_date }} {{ appt.booking_time }}</small></div>
+                            <div class="col-md-3">{{ appt.service.name }}<br><small class="text-muted">Technician: {{ appt.technician_name }}</small></div>
+                            <div class="col-md-2"><span class="badge bg-{{ 'success' if appt.status == 'COMPLETED' else 'warning' if appt.status == 'PENDING' else 'info' }}">{{ appt.status }}</span></div>
+                            <div class="col-md-2"><strong>Rs. {{ '{:,.0f}'.format(appt.service_fee) }}</strong></div>
+                            <div class="col-md-2 text-end"><a href="{{ url_for('customer.appointment_detail', appointment_id=appt.id) }}" class="btn btn-sm btn-outline-primary">Details</a></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state text-center py-5"><i class="fas fa-calendar fa-4x text-muted mb-3"></i><h4>No appointments</h4><a href="{{ url_for('services.listing') }}" class="btn btn-primary-glow">Book a Service</a></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

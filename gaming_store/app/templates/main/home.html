@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block title %}GameZone Store - Your Premier Gaming Destination{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg">
+        <div class="hero-particles"></div>
+    </div>
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <span class="hero-badge"><i class="fas fa-bolt me-1"></i> Welcome to GameZone</span>
+                    <h1 class="hero-title">Level Up Your <span class="text-gradient">Gaming</span> Experience</h1>
+                    <p class="hero-subtitle">Discover the latest gaming PCs, consoles, accessories, and professional gaming services. Unbeatable prices, expert support.</p>
+                    <div class="hero-buttons">
+                        <a href="{{ url_for('products.listing') }}" class="btn btn-primary-glow btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                        </a>
+                        <a href="{{ url_for('services.listing') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-wrench me-2"></i>Our Services
+                        </a>
+                    </div>
+                    <div class="hero-stats mt-4">
+                        <div class="stat-item"><span class="stat-number">{{ stats.total_products }}</span><span class="stat-label">Products</span></div>
+                        <div class="stat-item"><span class="stat-number">{{ stats.total_orders }}</span><span class="stat-label">Orders</span></div>
+                        <div class="stat-item"><span class="stat-number">{{ stats.total_technicians }}</span><span class="stat-label">Technicians</span></div>
+                        <div class="stat-item"><span class="stat-number">{{ stats.total_services }}</span><span class="stat-label">Services</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-visual">
+                    <div class="hero-glow"></div>
+                    <i class="fas fa-gamepad hero-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="section-padding">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">Browse</span>
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-subtitle">Find exactly what you need across our curated categories</p>
+        </div>
+        <div class="row g-3 justify-content-center">
+            {% for cat in categories %}
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                <a href="{{ url_for('products.listing', category=cat.id) }}" class="category-card">
+                    <div class="category-icon"><i class="fas fa-microchip"></i></div>
+                    <h6>{{ cat.name }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="section-padding bg-section">
+    <div class="container">
+        <div class="section-header d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <span class="section-badge">Featured</span>
+                <h2 class="section-title">Featured Products</h2>
+            </div>
+            <a href="{{ url_for('products.listing') }}" class="btn btn-outline-primary">View All <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    {% if product.is_on_sale %}
+                    <span class="product-badge badge-sale">-{{ product.discount_percent|int }}%</span>
+                    {% elif product.is_new_arrival %}
+                    <span class="product-badge badge-new">New</span>
+                    {% endif %}
+                    <a href="{{ url_for('products.detail', slug=product.slug) }}" class="product-image-link">
+                        <img src="{{ product.primary_image }}" alt="{{ product.name }}" class="product-image">
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category">{{ product.category.name }}</span>
+                        <h6 class="product-name"><a href="{{ url_for('products.detail', slug=product.slug) }}">{{ product.name }}</a></h6>
+                        <div class="product-rating">
+                            {% for i in range(5) %}
+                            <i class="fas fa-star{% if i >= product.rating %} text-muted{% endif %}"></i>
+                            {% endfor %}
+                            <span class="rating-count">({{ product.total_reviews }})</span>
+                        </div>
+                        <div class="product-price">
+                            {% if product.is_on_sale %}
+                            <span class="current-price">Rs. {{ '{:,.0f}'.format(product.discount_price) }}</span>
+                            <span class="original-price">Rs. {{ '{:,.0f}'.format(product.price) }}</span>
+                            {% else %}
+                            <span class="current-price">Rs. {{ '{:,.0f}'.format(product.price) }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            <form action="{{ url_for('products.add_to_cart') }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <button type="submit" class="btn btn-primary-glow btn-sm w-100"><i class="fas fa-cart-plus me-1"></i>Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Discount Products -->
+{% if discount_products %}
+<section class="section-padding">
+    <div class="container">
+        <div class="section-header d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <span class="section-badge badge-warning"><i class="fas fa-fire me-1"></i> Hot Deals</span>
+                <h2 class="section-title">Discounted Products</h2>
+            </div>
+            <a href="{{ url_for('products.listing', sort='discount') }}" class="btn btn-outline-warning">View All <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for product in discount_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    <span class="product-badge badge-sale">-{{ product.discount_percent|int }}%</span>
+                    <a href="{{ url_for('products.detail', slug=product.slug) }}" class="product-image-link">
+                        <img src="{{ product.primary_image }}" alt="{{ product.name }}" class="product-image">
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category">{{ product.category.name }}</span>
+                        <h6 class="product-name"><a href="{{ url_for('products.detail', slug=product.slug) }}">{{ product.name }}</a></h6>
+                        <div class="product-price">
+                            <span class="current-price">Rs. {{ '{:,.0f}'.format(product.discount_price) }}</span>
+                            <span class="original-price">Rs. {{ '{:,.0f}'.format(product.price) }}</span>
+                        </div>
+                        <div class="product-actions">
+                            <form action="{{ url_for('products.add_to_cart') }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <button type="submit" class="btn btn-primary-glow btn-sm w-100"><i class="fas fa-cart-plus me-1"></i>Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Services Section -->
+{% if services %}
+<section class="section-padding bg-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge"><i class="fas fa-tools me-1"></i> Services</span>
+            <h2 class="section-title">Professional Gaming Services</h2>
+            <p class="section-subtitle">Expert technicians for all your gaming needs</p>
+        </div>
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-wrench"></i></div>
+                    <h5>{{ service.name }}</h5>
+                    <p>{{ service.description[:100] }}{% if service.description|length > 100 %}...{% endif %}</p>
+                    <div class="service-meta">
+                        <span><i class="fas fa-dollar-sign me-1"></i>Rs. {{ '{:,.0f}'.format(service.fee) }}</span>
+                        <span><i class="fas fa-clock me-1"></i>{{ service.estimated_duration or 'Varies' }}</span>
+                    </div>
+                    <a href="{{ url_for('services.detail', slug=service.slug) }}" class="btn btn-outline-primary btn-sm mt-3">Learn More</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Newsletter / CTA -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card text-center">
+            <h2>Ready to Level Up?</h2>
+            <p>Join thousands of gamers who trust GameZone for their gaming needs.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary-glow btn-lg"><i class="fas fa-user-plus me-2"></i>Create Account</a>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-outline-light btn-lg"><i class="fas fa-envelope me-2"></i>Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

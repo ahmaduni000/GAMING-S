@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0f2fe"/>
+      <stop offset="100%" style="stop-color:#f0f9ff"/>
+    </linearGradient>
+    <linearGradient id="hs" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#38bdf8"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <circle cx="50" cy="40" r="60" fill="#0ea5e9" opacity="0.1"/>
+  <circle cx="360" cy="270" r="70" fill="#38bdf8" opacity="0.1"/>
+  <path d="M 100 160 Q 100 90 200 90 Q 300 90 300 160" stroke="url(#hs)" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <ellipse cx="100" cy="170" rx="35" ry="50" fill="url(#hs)"/>
+  <ellipse cx="300" cy="170" rx="35" ry="50" fill="url(#hs)"/>
+  <ellipse cx="100" cy="170" rx="20" ry="35" fill="#0c4a6e" opacity="0.3"/>
+  <ellipse cx="300" cy="170" rx="20" ry="35" fill="#0c4a6e" opacity="0.3"/>
+  <path d="M 200 90 L 200 60" stroke="url(#hs)" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="200" cy="55" r="10" fill="#f59e0b"/>
+  <text x="200" y="255" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#0284c7">Gaming Headset</text>
+</svg>

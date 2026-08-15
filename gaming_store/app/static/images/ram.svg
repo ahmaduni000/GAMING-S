@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0f2fe"/>
+      <stop offset="100%" style="stop-color:#f0f9ff"/>
+    </linearGradient>
+    <linearGradient id="ram" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect x="30" y="30" width="340" height="240" rx="20" fill="white" opacity="0.5"/>
+  <!-- RAM stick -->
+  <rect x="100" y="80" width="200" height="60" rx="6" fill="url(#ram)"/>
+  <rect x="105" y="85" width="190" height="50" rx="4" fill="#1e3a5f"/>
+  <!-- Chips -->
+  <rect x="115" y="90" width="20" height="15" rx="2" fill="#0ea5e9"/>
+  <rect x="145" y="90" width="20" height="15" rx="2" fill="#0ea5e9"/>
+  <rect x="175" y="90" width="20" height="15" rx="2" fill="#0ea5e9"/>
+  <rect x="205" y="90" width="20" height="15" rx="2" fill="#0ea5e9"/>
+  <rect x="235" y="90" width="20" height="15" rx="2" fill="#0ea5e9"/>
+  <rect x="265" y="90" width="20" height="15" rx="2" fill="#0ea5e9"/>
+  <!-- Heatspreader label -->
+  <text x="200" y="122" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#38bdf8">DDR5 6000MHz</text>
+  <!-- Connector -->
+  <rect x="100" y="140" width="200" height="12" rx="2" fill="#334155"/>
+  <!-- Notch -->
+  <rect x="180" y="140" width="15" height="12" fill="#0ea5e9"/>
+  <!-- Second stick -->
+  <rect x="110" y="160" width="180" height="45" rx="5" fill="url(#ram)" opacity="0.6"/>
+  <text x="200" y="245" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#0284c7">DDR5 RAM 32GB</text>
+</svg>

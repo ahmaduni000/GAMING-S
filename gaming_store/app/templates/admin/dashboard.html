@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - GameZone Hub{% endblock %}
+
+{% block content %}<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+                    <p class="text-muted mb-0">Overview of your store</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-2 col-md-4 col-6">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-body text-center">
+                            <div class="bg-success bg-opacity-10 rounded-3 p-2 d-inline-block mb-2">
+                                <i class="fas fa-dollar-sign text-success fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">{{ '%.0f'|format(total_revenue) }}</h4>
+                            <small class="text-muted">Revenue</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-6">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-body text-center">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-2 d-inline-block mb-2">
+                                <i class="fas fa-shopping-cart text-primary fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">{{ total_orders }}</h4>
+                            <small class="text-muted">Orders</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-6">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-body text-center">
+                            <div class="bg-warning bg-opacity-10 rounded-3 p-2 d-inline-block mb-2">
+                                <i class="fas fa-clock text-warning fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">{{ pending_orders }}</h4>
+                            <small class="text-muted">Pending</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-6">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-body text-center">
+                            <div class="bg-info bg-opacity-10 rounded-3 p-2 d-inline-block mb-2">
+                                <i class="fas fa-users text-info fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">{{ total_customers }}</h4>
+                            <small class="text-muted">Customers</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-6">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-body text-center">
+                            <div class="bg-secondary bg-opacity-10 rounded-3 p-2 d-inline-block mb-2">
+                                <i class="fas fa-box text-secondary fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">{{ total_products }}</h4>
+                            <small class="text-muted">Products</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-6">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-body text-center">
+                            <div class="bg-danger bg-opacity-10 rounded-3 p-2 d-inline-block mb-2">
+                                <i class="fas fa-exclamation-triangle text-danger fs-4"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">{{ low_stock }}</h4>
+                            <small class="text-muted">Low Stock</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm glass-card text-center">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-primary mb-0">{{ completed_orders }}</h5>
+                            <small class="text-muted">Completed Orders</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm glass-card text-center">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-success mb-0">{{ total_services }}</h5>
+                            <small class="text-muted">Services</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm glass-card text-center">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-info mb-0">{{ total_appointments }}</h5>
+                            <small class="text-muted">Appointments</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm glass-card text-center">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-warning mb-0">{{ pending_payments }}</h5>
+                            <small class="text-muted">Pending Payments</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Tables -->
+            <div class="row g-4">
+                <!-- Revenue Chart -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-chart-line me-2"></i>Monthly Revenue</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card mb-3">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-info-circle me-2"></i>Store Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Staff Members</span>
+                                <strong>{{ total_staff }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Technicians</span>
+                                <strong>{{ total_technicians }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Total Services</span>
+                                <strong>{{ total_services }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Total Appointments</span>
+                                <strong>{{ total_appointments }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unread Messages -->
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-envelope me-2"></i>Unread Messages</h5>
+                            <a href="{{ url_for('admin.messages') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            {% for msg in recent_messages %}
+                            <div class="mb-2 pb-2 border-bottom">
+                                <strong class="small">{{ msg.name }}</strong>
+                                <p class="text-muted small mb-0">{{ msg.subject }} - {{ msg.message[:50] }}...</p>
+                            </div>
+                            {% endfor %}
+                            {% if not recent_messages %}
+                            <p class="text-muted text-center mb-0">No unread messages</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card border-0 shadow-sm glass-card mt-4">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-list me-2"></i>Recent Orders</h5>
+                    <a href="{{ url_for('admin.orders') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><strong>{{ order.order_number }}</strong></td>
+                                    <td>{{ order.customer.full_name }}</td>
+                                    <td class="fw-bold">{{ '%.2f'|format(order.total) }}</td>
+                                    <td><span class="badge bg-{{ 'success' if order.status == 'DELIVERED' else 'primary' if order.status == 'CONFIRMED' else 'warning' if order.status == 'PENDING' else 'info' }}">{{ order.status }}</span></td>
+                                    <td>{{ order.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td><a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ monthly_labels|tojson }},
+            datasets: [{
+                label: 'Revenue ($)',
+                data: {{ monthly_revenue|tojson }},
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#6366f1',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

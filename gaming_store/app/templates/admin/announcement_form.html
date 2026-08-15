@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if announcement else 'Add' }} Announcement - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-bullhorn me-2"></i>{{ 'Edit' if announcement else 'Add' }} Announcement</h2>
+                <a href="{{ url_for('admin.announcements') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Announcements
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title</label>
+                                    {{ form.title(class="form-control", placeholder="Announcement title") }}
+                                    {% for error in form.title.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Type</label>
+                                    {{ form.announcement_type(class="form-select") }}
+                                    {% for error in form.announcement_type.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Content</label>
+                                    {{ form.content(class="form-control", rows="5", placeholder="Announcement content...") }}
+                                    {% for error in form.content.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Target Audience</label>
+                                    {{ form.target_audience(class="form-select") }}
+                                    {% for error in form.target_audience.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_active(class="form-check-input") }}
+                                            <label class="form-check-label fw-bold">Active</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_pinned(class="form-check-input") }}
+                                            <label class="form-check-label fw-bold">Pinned</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-1"></i>{{ 'Update' if announcement else 'Create' }} Announcement
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

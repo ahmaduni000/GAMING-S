@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0f2fe"/>
+      <stop offset="100%" style="stop-color:#f0f9ff"/>
+    </linearGradient>
+    <linearGradient id="tshirt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <circle cx="340" cy="40" r="70" fill="#0ea5e9" opacity="0.1"/>
+  <circle cx="50" cy="270" r="60" fill="#38bdf8" opacity="0.1"/>
+  <path d="M 150 80 L 120 110 L 140 130 L 140 230 L 260 230 L 260 130 L 280 110 L 250 80 Z" fill="url(#tshirt)"/>
+  <path d="M 150 80 Q 200 120 250 80" stroke="#0c4a6e" stroke-width="4" fill="none" opacity="0.4"/>
+  <text x="200" y="170" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#e0f2fe" font-weight="bold">GZ</text>
+  <text x="200" y="270" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#0284c7">Gaming T-Shirt</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0f2fe"/>
+      <stop offset="100%" style="stop-color:#f0f9ff"/>
+    </linearGradient>
+    <linearGradient id="hood" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect x="30" y="30" width="340" height="240" rx="20" fill="white" opacity="0.5"/>
+  <!-- Hoodie body -->
+  <path d="M140,70 L260,70 L275,200 L125,200 Z" fill="url(#hood)"/>
+  <!-- Hood -->
+  <path d="M150,70 Q200,40 250,70" fill="#0284c7" stroke="#1e3a5f" stroke-width="2"/>
+  <path d="M160,72 Q200,50 240,72" fill="#1e3a5f"/>
+  <!-- Sleeves -->
+  <path d="M140,75 L100,130 L115,140 L150,90 Z" fill="url(#hood)"/>
+  <path d="M260,75 L300,130 L285,140 L250,90 Z" fill="url(#hood)"/>
+  <!-- Pocket -->
+  <rect x="165" y="150" width="70" height="35" rx="5" fill="#0284c7" opacity="0.5"/>
+  <!-- Drawstrings -->
+  <line x1="190" y1="75" x2="188" y2="110" stroke="#7dd3fc" stroke-width="2"/>
+  <line x1="210" y1="75" x2="212" y2="110" stroke="#7dd3fc" stroke-width="2"/>
+  <!-- Logo -->
+  <text x="200" y="120" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#38bdf8">GZ</text>
+  <text x="200" y="250" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#0284c7">Gaming Hoodie</text>
+</svg>

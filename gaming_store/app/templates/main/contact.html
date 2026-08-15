@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us - GameZone Store{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div class="container text-center">
+        <h1>Contact Us</h1>
+        <p>We'd love to hear from you</p>
+    </div>
+</section>
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <h3 class="mb-4">Get In Touch</h3>
+                <div class="contact-info-list">
+                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i><div><h6>Address</h6><p>123 Gaming Street, Tech City, Pakistan</p></div></div>
+                    <div class="contact-item"><i class="fas fa-phone"></i><div><h6>Phone</h6><p>+92 300 1234567</p></div></div>
+                    <div class="contact-item"><i class="fas fa-envelope"></i><div><h6>Email</h6><p>info@gamezone.com</p></div></div>
+                    <div class="contact-item"><i class="fas fa-clock"></i><div><h6>Business Hours</h6><p>Mon-Sat: 9:00 AM - 9:00 PM</p></div></div>
+                </div>
+                <div class="social-links mt-4">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card glass-card">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">Send Us a Message</h4>
+                        <form method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Full Name *</label>
+                                    {{ form.name(class="form-control", placeholder="Your name") }}
+                                    {% if form.name.errors %}<small class="text-danger">{{ form.name.errors[0] }}</small>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    {{ form.email(class="form-control", placeholder="your@email.com") }}
+                                    {% if form.email.errors %}<small class="text-danger">{{ form.email.errors[0] }}</small>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    {{ form.phone(class="form-control", placeholder="+92...") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Username</label>
+                                    {{ form.username(class="form-control", placeholder="Optional") }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Subject *</label>
+                                    {{ form.subject(class="form-control", placeholder="How can we help?") }}
+                                    {% if form.subject.errors %}<small class="text-danger">{{ form.subject.errors[0] }}</small>{% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Message *</label>
+                                    {{ form.message(class="form-control", rows="5", placeholder="Your message...") }}
+                                    {% if form.message.errors %}<small class="text-danger">{{ form.message.errors[0] }}</small>{% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary-glow btn-lg"><i class="fas fa-paper-plane me-2"></i>Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Technician Login - GameZone Hub{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center align-items-center g-4">
+            <!-- Left Side - Branding -->
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="auth-side">
+                    <i class="fas fa-user-wrench"></i>
+                    <h3>Technician Portal</h3>
+                    <p>Secure access for GameZone technicians to manage appointments and services.</p>
+                    <div class="auth-stat">
+                        <div class="auth-stat-item">
+                            <span class="number"><i class="fas fa-clock"></i></span>
+                            <span class="label">Appointments</span>
+                        </div>
+                        <div class="auth-stat-item">
+                            <span class="number"><i class="fas fa-cogs"></i></span>
+                            <span class="label">Services</span>
+                        </div>
+                        <div class="auth-stat-item">
+                            <span class="number"><i class="fas fa-user"></i></span>
+                            <span class="label">Profile</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Side - Login Form -->
+            <div class="col-md-6 col-lg-5">
+                <div class="auth-card card glass-card">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="auth-icon"><i class="fas fa-user-lock"></i></div>
+                            <h3>Welcome Back</h3>
+                            <p class="text-muted">Sign in to your Technician account</p>
+                        </div>
+                        <form method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    {{ form.email(class="form-control", placeholder="tech@gamezone.com", autofocus=true) }}
+                                </div>
+                                {% if form.email.errors %}<small class="text-danger">{{ form.email.errors[0] }}</small>{% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    {{ form.password(class="form-control", placeholder="Enter your password") }}
+                                </div>
+                                {% if form.password.errors %}<small class="text-danger">{{ form.password.errors[0] }}</small>{% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-primary-glow w-100 btn-lg mt-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </form>
+                        <div class="auth-divider"><span>or</span></div>
+                        <div class="text-center">
+                            <p class="mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Create Account</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

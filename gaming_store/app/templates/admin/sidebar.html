@@ -1,0 +1,82 @@
+<!-- Admin Sidebar -->
+<div class="admin-sidebar bg-dark text-white p-3" style="min-height: calc(100vh - 70px); width: 250px; position: fixed; top: 70px; left: 0; overflow-y: auto; z-index: 100; max-height: 100%;">
+<div class="mb-4">
+<h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">
+<i class="fas fa-shield-alt me-1"></i> Admin Panel
+</h6>
+</div>
+<ul class="nav flex-column">
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if request.endpoint == 'admin.dashboard' }}" href="{{ url_for('admin.dashboard') }}">
+<i class="fas fa-tachometer-alt me-2"></i>Dashboard
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'customer' in request.endpoint|default('') }}" href="{{ url_for('admin.customers') }}">
+<i class="fas fa-users me-2"></i>Customers
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'product' in request.endpoint|default('') }}" href="{{ url_for('admin.products') }}">
+<i class="fas fa-product-hunt me-2"></i>Products
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'category' in request.endpoint|default('') }}" href="{{ url_for('admin.categories') }}">
+<i class="fas fa-folder me-2"></i>Categories
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'order' in request.endpoint|default('') }}" href="{{ url_for('admin.orders') }}">
+<i class="fas fa-shopping-basket me-2"></i>Orders
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'payment' in request.endpoint|default('') }}" href="{{ url_for('admin.payments') }}">
+<i class="fas fa-wallet me-2"></i>Payments
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'service' in request.endpoint|default('') }}" href="{{ url_for('admin.services') }}">
+<i class="fas fa-cog me-2"></i>Services
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'technician' in request.endpoint|default('') }}" href="{{ url_for('admin.technicians') }}">
+<i class="fas fa-user-tie me-2"></i>Technicians
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'staff' in request.endpoint|default('') }}" href="{{ url_for('admin.staff_list') }}">
+<i class="fas fa-user-tie me-2"></i>Staff
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'review' in request.endpoint|default('') }}" href="{{ url_for('admin.reviews') }}">
+<i class="fas fa-comment-meh me-2"></i>Reviews
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'message' in request.endpoint|default('') }}" href="{{ url_for('admin.messages') }}">
+<i class="fas fa-envelope me-2"></i>Messages
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'announcement' in request.endpoint|default('') }}" href="{{ url_for('admin.announcements') }}">
+<i class="fas fa-bullhorn me-2"></i>Announcements
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'banner' in request.endpoint|default('') }}" href="{{ url_for('admin.banners') }}">
+<i class="fas fa-image me-2"></i>Banners
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white" href="{{ url_for('admin.payment_settings') }}">
+<i class="fas fa-sliders-h me-2"></i>Payment Settings
+</a>
+</li>
+</ul>
+<style>
+</style>
+</div>

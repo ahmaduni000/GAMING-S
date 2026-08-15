@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Manage Customers - GameZone Hub{% endblock %}
+
+{% block content %}<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-users me-2"></i>Manage Customers</h2>
+            </div>
+
+            <!-- Search -->
+            <div class="card border-0 shadow-sm glass-card mb-4">
+                <div class="card-body py-3">
+                    <form method="GET" class="d-flex gap-2">
+                        <input type="text" name="q" class="form-control" placeholder="Search by name or email..." value="{{ search }}">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                        {% if search %}
+                        <a href="{{ url_for('admin.customers') }}" class="btn btn-outline-secondary"><i class="fas fa-times"></i></a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Customers Table -->
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Orders</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users.items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width:35px;height:35px;">
+                                                <i class="fas fa-user text-primary small"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ user.full_name }}</strong>
+                                                <br><small class="text-muted">@{{ user.username }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.phone or 'N/A' }}</td>
+                                    <td>{{ user.customer_orders.count() }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('admin.customer_detail', user_id=user.id) }}" class="btn btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('admin.toggle_customer', user_id=user.id) }}">
+                                                <button type="submit" class="btn btn-outline-{{ 'warning' if user.is_active else 'success' }}" title="{{ 'Deactivate' if user.is_active else 'Activate' }}">
+                                                    <i class="fas fa-{{ 'ban' if user.is_active else 'check' }}"></i>
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ url_for('admin.delete_customer', user_id=user.id) }}" onsubmit="return confirm('Delete this customer?')">
+                                                <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not users.items %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No customers found</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if users.pages > 1 %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if users.has_prev %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('admin.customers', page=users.prev_num, q=search) }}"><i class="fas fa-chevron-left"></i></a></li>
+                    {% endif %}
+                    {% for p in users.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if p %}
+                    <li class="page-item {{ 'active' if p == users.page }}"><a class="page-link" href="{{ url_for('admin.customers', page=p, q=search) }}">{{ p }}</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if users.has_next %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('admin.customers', page=users.next_num, q=search) }}"><i class="fas fa-chevron-right"></i></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

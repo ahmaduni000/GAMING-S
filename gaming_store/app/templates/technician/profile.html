@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Technician Profile - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-user-wrench me-2"></i>My Technician Profile</h2>
+        <a href="{{ url_for('technician.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="fw-bold mb-0">Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Skills</label>
+                            <textarea name="skills" class="form-control" rows="3" placeholder="e.g. PC Building, Soldering, Data Recovery">{{ tech.skills or '' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Bio</label>
+                            <textarea name="bio" class="form-control" rows="3" placeholder="Short professional bio">{{ tech.bio or '' }}</textarea>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Experience (years)</label>
+                                <input type="number" name="experience_years" class="form-control" min="0" value="{{ tech.experience_years or 0 }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Hourly Rate</label>
+                                <input type="number" name="hourly_rate" class="form-control" min="0" step="0.01" value="{{ tech.hourly_rate or 0 }}">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="is_available" id="is_available" {{ 'checked' if tech.is_available else '' }}>
+                                    <label class="form-check-label" for="is_available">Available for jobs</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-info-circle me-2"></i>Account</h5>
+                </div>
+                <div class="card-body">
+                    <p><span class="text-muted">Name:</span> <strong>{{ current_user.full_name }}</strong></p>
+                    <p><span class="text-muted">Email:</span> <strong>{{ current_user.email }}</strong></p>
+                    <p><span class="text-muted">Rating:</span>
+                        <strong>
+                            {% if tech and tech.rating %}{{ '%.1f'|format(tech.rating) }} / 5.0{% else %}No ratings yet{% endif %}
+                        </strong>
+                    </p>
+                    <p class="mb-0"><span class="text-muted">Total Reviews:</span>
+                        <strong>{{ tech.total_reviews if tech else 0 }}</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Manage Announcements - GameZone Hub{% endblock %}
+
+{% block content %}<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-bullhorn me-2"></i>Manage Announcements</h2>
+                <a href="{{ url_for('admin.announcement_form') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Announcement
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Target</th>
+                                    <th>Pinned</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ann in announcements %}
+                                <tr>
+                                    <td><strong>{{ ann.title }}</strong></td>
+                                    <td><span class="badge bg-info">{{ ann.announcement_type }}</span></td>
+                                    <td>{{ ann.target_audience|capitalize }}</td>
+                                    <td>{% if ann.is_pinned %}<i class="fas fa-thumbtack text-primary">{% endif %}</td>
+                                    <td>
+                                        {% if ann.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ann.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('admin.announcement_form', ann_id=ann.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not announcements %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No announcements yet</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

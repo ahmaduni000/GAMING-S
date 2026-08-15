@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Manage Orders - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-shopping-cart me-2"></i>Manage Orders</h2>
+        <a href="{{ url_for('staff.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Status Filters -->
+    <div class="card border-0 shadow-sm glass-card mb-4">
+        <div class="card-body py-3">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('staff.orders') }}" class="btn btn-sm {{ 'btn-primary' if not current_status else 'btn-outline-primary' }}">
+                    All
+                </a>
+                <a href="{{ url_for('staff.orders', status='PENDING') }}" class="btn btn-sm {{ 'btn-warning' if current_status == 'PENDING' else 'btn-outline-warning' }}">
+                    Pending
+                </a>
+                <a href="{{ url_for('staff.orders', status='CONFIRMED') }}" class="btn btn-sm {{ 'btn-info' if current_status == 'CONFIRMED' else 'btn-outline-info' }}">
+                    Confirmed
+                </a>
+                <a href="{{ url_for('staff.orders', status='PROCESSING') }}" class="btn btn-sm {{ 'btn-primary' if current_status == 'PROCESSING' else 'btn-outline-primary' }}">
+                    Processing
+                </a>
+                <a href="{{ url_for('staff.orders', status='PACKED') }}" class="btn btn-sm {{ 'btn-secondary' if current_status == 'PACKED' else 'btn-outline-secondary' }}">
+                    Packed
+                </a>
+                <a href="{{ url_for('staff.orders', status='SHIPPED') }}" class="btn btn-sm {{ 'btn-info' if current_status == 'SHIPPED' else 'btn-outline-info' }}">
+                    Shipped
+                </a>
+                <a href="{{ url_for('staff.orders', status='DELIVERED') }}" class="btn btn-sm {{ 'btn-success' if current_status == 'DELIVERED' else 'btn-outline-success' }}">
+                    Delivered
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card border-0 shadow-sm glass-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders.items %}
+                        <tr>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                            <td>
+                                <div>{{ order.customer.full_name }}</div>
+                                <small class="text-muted">{{ order.customer.email }}</small>
+                            </td>
+                            <td>{{ order.item_count }} item(s)</td>
+                            <td class="fw-bold">{{ '%.2f'|format(order.total) }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if order.payment_method == 'cod' else 'primary' }}">
+                                    {{ order.payment_method|upper }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if order.status == 'DELIVERED' else 'primary' if order.status == 'CONFIRMED' else 'info' if order.status == 'PROCESSING' else 'warning' if order.status == 'PENDING' else 'secondary' }}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>{{ order.created_at.strftime('%b %d, %Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('staff.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not orders.items %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No orders found</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.pages > 1 %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if orders.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('staff.orders', page=orders.prev_num, status=current_status) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for p in orders.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if p %}
+            <li class="page-item {{ 'active' if p == orders.page }}">
+                <a class="page-link" href="{{ url_for('staff.orders', page=p, status=current_status) }}">{{ p }}</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+            {% endfor %}
+            {% if orders.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('staff.orders', page=orders.next_num, status=current_status) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

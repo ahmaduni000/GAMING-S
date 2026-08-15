@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Appointment {{ booking.booking_number }} - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">{% include 'customer/sidebar.html' %}</div>
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between mb-4">
+                    <h3>Appointment {{ booking.booking_number }}</h3>
+                    <a href="{{ url_for('customer.appointments') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-arrow-left me-1"></i>Back</a>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="card glass-card mb-4">
+                            <div class="card-header"><h6 class="mb-0">Booking Details</h6></div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6"><strong>Service:</strong><br>{{ booking.service.name }}</div>
+                                    <div class="col-md-6"><strong>Status:</strong><br><span class="badge bg-{{ 'success' if booking.status == 'COMPLETED' else 'warning' if booking.status == 'PENDING' else 'info' }}">{{ booking.status }}</span></div>
+                                    <div class="col-md-6"><strong>Date & Time:</strong><br>{{ booking.booking_date }} {{ booking.booking_time }}</div>
+                                    <div class="col-md-6"><strong>Technician:</strong><br>{{ booking.technician_name }}</div>
+                                    <div class="col-md-6"><strong>Location:</strong><br>{{ booking.service_location }}</div>
+                                    <div class="col-md-6"><strong>Fee:</strong><br>Rs. {{ '{:,.0f}'.format(booking.service_fee) }}</div>
+                                    <div class="col-12"><strong>Problem Description:</strong><br>{{ booking.problem_description or 'N/A' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card glass-card">
+                            <div class="card-header"><h6 class="mb-0">Status Timeline</h6></div>
+                            <div class="card-body">
+                                {% for h in status_history %}
+                                <div class="mb-2 pb-2 border-bottom">
+                                    <span class="badge bg-{{ status_color(h.new_status) }} mb-1">{{ h.new_status }}</span>
+                                    <small class="d-block text-muted">{{ h.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                    {% if h.note %}<small>{{ h.note }}</small>{% endif %}
+                                </div>
+                                {% endfor %}
+                                {% if not status_history %}<p class="text-muted">No status updates yet.</p>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

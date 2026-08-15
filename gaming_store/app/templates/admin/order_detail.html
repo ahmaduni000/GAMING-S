@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }} - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-file-invoice me-2"></i>Order {{ order.order_number }}</h2>
+                <a href="{{ url_for('admin.orders') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Orders
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Order Info -->
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Order Details</h5></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="text-muted small">Order #</label><p class="fw-bold">{{ order.order_number }}</p></div>
+                                <div class="col-md-4"><label class="text-muted small">Date</label><p class="fw-bold">{{ order.created_at.strftime('%B %d, %Y %I:%M %p') }}</p></div>
+                                <div class="col-md-4"><label class="text-muted small">Payment</label><p><span class="badge bg-{{ 'success' if order.payment_method == 'cod' else 'primary' }} fs-6">{{ order.payment_method|upper }}</span></p></div>
+                                <div class="col-md-4"><label class="text-muted small">Status</label><p><span class="badge bg-{{ status_color(order.status) }} fs-6">{{ order.status }}</span></p></div>
+                                <div class="col-md-4"><label class="text-muted small">Payment Status</label><p><span class="badge bg-{{ 'success' if order.payment_status == 'VERIFIED' else 'warning' if order.payment_status == 'WAITING_FOR_VERIFICATION' else 'danger' }}">{{ order.payment_status }}</span></p></div>
+                                <div class="col-md-4"><label class="text-muted small">Total</label><p class="fw-bold text-primary fs-5">{{ '%.2f'|format(order.total) }}</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer -->
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Customer</h5></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="text-muted small">Name</label><p class="fw-bold">{{ order.customer.full_name }}</p></div>
+                                <div class="col-md-4"><label class="text-muted small">Email</label><p class="fw-bold">{{ order.customer.email }}</p></div>
+                                {% if order.billing_detail %}
+                                <div class="col-md-4"><label class="text-muted small">Phone</label><p class="fw-bold">{{ order.billing_detail.phone }}</p></div>
+                                <div class="col-12"><label class="text-muted small">Address</label><p class="fw-bold">{{ order.billing_detail.address }}, {{ order.billing_detail.city }}, {{ order.billing_detail.state }} {{ order.billing_detail.zip_code }}</p></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items -->
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Order Items</h5></div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr><th>Product</th><th>Price</th><th>Qty</th><th class="text-end">Subtotal</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items %}
+                                        <tr>
+                                            <td><strong>{{ item.product.name }}</strong></td>
+                                            <td>{{ '%.2f'|format(item.product_price) }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td class="text-end fw-bold">{{ '%.2f'|format(item.subtotal) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-light">
+                                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                                            <td class="text-end fw-bold text-primary fs-5">{{ '%.2f'|format(order.total) }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Proof -->
+                    {% if order.payments %}
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-receipt me-2"></i>Payment Proofs</h5></div>
+                        <div class="card-body">
+                            {% for payment in order.payments %}
+                            <div class="border rounded p-3 mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span><strong>{{ payment.payment_method|upper }}</strong> - {{ payment.amount }}</span>
+                                    <span class="badge bg-{{ 'success' if payment.status == 'VERIFIED' else 'warning' if payment.status == 'WAITING_FOR_VERIFICATION' else 'danger' }}">{{ payment.status }}</span>
+                                </div>
+                                {% if payment.proof and payment.proof.screenshot_path %}
+                                <div class="mt-2">
+                                    <img src="{{ payment.proof.screenshot_path }}" class="rounded" style="max-width:200px;" alt="Payment Proof">
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Status History -->
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-history me-2"></i>Status History</h5></div>
+                        <div class="card-body">
+                            {% for h in history %}
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="bg-{{ status_color(h.new_status) }} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                                        <i class="fas fa-circle text-{{ status_color(h.new_status) }}" style="font-size:12px;"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>{{ h.old_status }} → {{ h.new_status }}</strong>
+                                        <small class="text-muted">{{ h.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                    </div>
+                                    {% if h.note %}<small class="text-muted">{{ h.note }}</small>{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if not history %}<p class="text-muted text-center mb-0">No history</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-edit me-2"></i>Update Status</h5></div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Status</label>
+                                    {{ form.status(class="form-select") }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Note</label>
+                                    {{ form.note(class="form-control", rows="3", placeholder="Status note...") }}
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save me-1"></i>Update Status</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

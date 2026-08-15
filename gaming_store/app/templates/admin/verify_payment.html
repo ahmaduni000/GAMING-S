@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Verify Payment - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-check-circle me-2"></i>Verify Payment</h2>
+                <a href="{{ url_for('admin.payments') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Payments
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Payment Info -->
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Payment Details</h5></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Order Number</label>
+                                    <p class="fw-bold">{{ payment.order.order_number }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Customer</label>
+                                    <p class="fw-bold">{{ payment.order.customer.full_name }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Amount</label>
+                                    <p class="fw-bold text-primary fs-4">{{ '%.2f'|format(payment.amount) }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Payment Method</label>
+                                    <p><span class="badge bg-primary fs-6">{{ payment.payment_method|upper }}</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Status</label>
+                                    <p><span class="badge bg-{{ 'success' if payment.status == 'VERIFIED' else 'warning' if payment.status == 'WAITING_FOR_VERIFICATION' else 'danger' }} fs-6">{{ payment.status }}</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small">Date</label>
+                                    <p class="fw-bold">{{ payment.created_at.strftime('%B %d, %Y %I:%M %p') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Proof Screenshot -->
+                    {% if payment.proof and payment.proof.screenshot_path %}
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-image me-2"></i>Payment Screenshot</h5></div>
+                        <div class="card-body text-center">
+                            <img src="{{ payment.proof.screenshot_path }}" class="img-fluid rounded shadow" style="max-height:400px;" alt="Payment Proof">
+                            {% if payment.proof.description %}
+                            <p class="mt-2 text-muted"><strong>Note:</strong> {{ payment.proof.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i>No payment screenshot uploaded.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Verification Form -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-gavel me-2"></i>Verification</h5></div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Decision</label>
+                                    {{ form.status(class="form-select") }}
+                                    {% for error in form.status.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Verification Note</label>
+                                    {{ form.verification_note(class="form-control", rows="3", placeholder="Add a note...") }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Rejection Reason</label>
+                                    {{ form.rejection_reason(class="form-control", rows="2", placeholder="If rejecting, provide reason...") }}
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save me-1"></i>Submit Verification
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="card border-0 shadow-sm glass-card mt-3">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Order Summary</h5></div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Order Total</span>
+                                <strong>{{ '%.2f'|format(payment.order.total) }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Payment Amount</span>
+                                <strong>{{ '%.2f'|format(payment.amount) }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Order Status</span>
+                                <span class="badge bg-{{ 'success' if payment.order.status == 'DELIVERED' else 'warning' }}">{{ payment.order.status }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

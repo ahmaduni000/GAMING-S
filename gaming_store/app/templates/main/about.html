@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}About Us - GameZone Store{% endblock %}
+{% block content %}
+<section class="page-header page-header-about">
+    <div class="container text-center">
+        <h1>About GameZone</h1>
+        <p>Your Premier Gaming Partner</p>
+    </div>
+</section>
+<section class="section-padding">
+    <div class="container">
+        <div class="row align-items-center g-5 mb-5">
+            <div class="col-lg-6">
+                <span class="section-badge">Who We Are</span>
+                <h2 class="section-title">The Ultimate Gaming Destination</h2>
+                <p class="lead">GameZone Store is a leading gaming retailer offering the latest gaming PCs, consoles, accessories, and professional gaming services.</p>
+                <p>Founded with a passion for gaming, we have been serving gamers across the country with top-quality products and exceptional customer service. Our team of expert technicians and gaming enthusiasts ensures every customer finds exactly what they need.</p>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="about-visual">
+                    <a href="{{ url_for('static', filename='GAME ZONE LOGO.WEB.webp') }}" class="about-logo-zoom" title="Click to zoom">
+                        <img src="{{ url_for('static', filename='GAME ZONE LOGO.WEB.webp') }}" alt="GameZone Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-bullseye fa-2x text-primary"></i></div>
+                    <h5>Our Mission</h5>
+                    <p class="text-muted">To provide gamers with the best products, services, and support at competitive prices.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-eye fa-2x text-primary"></i></div>
+                    <h5>Our Vision</h5>
+                    <p class="text-muted">To become the most trusted gaming platform for gamers nationwide.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3"><i class="fas fa-heart fa-2x text-primary"></i></div>
+                    <h5>Why Choose Us</h5>
+                    <p class="text-muted">Genuine products, expert support, fast delivery, and professional gaming services.</p>
+                </div>
+            </div>
+        </div>
+        <div class="stats-bar">
+            <div class="row text-center g-4">
+                <div class="col-6 col-md">
+                    <div class="stat-box"><h3>{{ stats.total_users }}</h3><p>Total Users</p></div>
+                </div>
+                <div class="col-6 col-md">
+                    <div class="stat-box"><h3>{{ stats.total_orders }}</h3><p>Total Orders</p></div>
+                </div>
+                <div class="col-6 col-md">
+                    <div class="stat-box"><h3>{{ stats.total_products }}</h3><p>Products</p></div>
+                </div>
+                <div class="col-6 col-md">
+                    <div class="stat-box"><h3>{{ stats.total_services }}</h3><p>Services</p></div>
+                </div>
+                <div class="col-6 col-md">
+                    <div class="stat-box"><h3>{{ stats.total_technicians }}</h3><p>Technicians</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logoLinks = document.querySelectorAll('.about-logo-zoom');
+    logoLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const img = this.querySelector('img');
+            if (img.classList.contains('zoomed')) {
+                img.classList.remove('zoomed');
+            } else {
+                img.classList.add('zoomed');
+            }
+        });
+    });
+});
+</script>
+<style>
+.zoomed {
+    transform: scale(3);
+    transition: transform 0.3s ease;
+}
+</style>
+{% endblock %}

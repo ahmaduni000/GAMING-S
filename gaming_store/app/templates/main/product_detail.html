@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('products.listing') }}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('products.listing', category=product.category_id) }}">{{ product.category.name }}</a></li>
+                <li class="breadcrumb-item active">{{ product.name }}</li>
+            </ol>
+        </nav>
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="product-gallery">
+                    <img src="{{ product.primary_image }}" alt="{{ product.name }}" class="main-image" id="mainImage">
+                    <div class="gallery-thumbs mt-3">
+                        {% for img in product.images %}
+                        <img src="{{ img.image_url }}" alt="Thumbnail" class="thumb-img {% if loop.first %}active{% endif %}" onclick="document.getElementById('mainImage').src='{{ img.image_url }}'; document.querySelectorAll('.thumb-img').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <span class="product-category mb-2">{{ product.category.name }}</span>
+                <h1 class="product-detail-title">{{ product.name }}</h1>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="product-rating">
+                        {% for i in range(5) %}
+                        <i class="fas fa-star{% if i >= product.rating %} text-muted{% endif %}"></i>
+                        {% endfor %}
+                        <span>({{ product.total_reviews }} reviews)</span>
+                    </div>
+                    <span class="text-muted">SKU: {{ product.sku or 'N/A' }}</span>
+                </div>
+                <div class="product-price-detail mb-3">
+                    {% if product.is_on_sale %}
+                    <span class="detail-price">Rs. {{ '{:,.0f}'.format(product.discount_price) }}</span>
+                    <span class="detail-original">Rs. {{ '{:,.0f}'.format(product.price) }}</span>
+                    <span class="discount-badge">Save {{ product.discount_percent|int }}%</span>
+                    {% else %}
+                    <span class="detail-price">Rs. {{ '{:,.0f}'.format(product.price) }}</span>
+                    {% endif %}
+                </div>
+                <p class="product-description">{{ product.description or 'No description available.' }}</p>
+                <div class="stock-info mb-4">
+                    {% if product.in_stock %}
+                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>In Stock ({{ product.stock_quantity }} available)</span>
+                    {% else %}
+                    <span class="text-danger"><i class="fas fa-times-circle me-1"></i>Out of Stock</span>
+                    {% endif %}
+                </div>
+                {% if product.features %}
+                <div class="features-list mb-4">
+                    <h6><i class="fas fa-check-double me-2"></i>Features</h6>
+                    <ul>
+                        {% for feature in product.features.split('\n') if feature.strip() %}
+                        <li>{{ feature.strip() }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <div class="d-flex gap-3 mb-4">
+                    {% if product.in_stock %}
+                    <form action="{{ url_for('products.add_to_cart') }}" method="POST" class="d-flex gap-2 flex-grow-1">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <div class="input-group" style="width:130px;">
+                            <button type="button" class="btn btn-outline-secondary" onclick="changeQty(-1)">-</button>
+                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="form-control text-center" id="qtyInput">
+                            <button type="button" class="btn btn-outline-secondary" onclick="changeQty(1)">+</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary-glow flex-grow-1"><i class="fas fa-cart-plus me-2"></i>Add to Cart</button>
+                    </form>
+                    {% endif %}
+                    <form action="{{ url_for('products.toggle_wishlist', product_id=product.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-outline-danger"><i class="fas fa-heart{% if in_wishlist %} text-danger{% endif %}"></i></button>
+                    </form>
+                </div>
+                <!-- Specifications -->
+                {% if product.specifications.first() %}
+                <div class="specifications mt-4">
+                    <h6><i class="fas fa-info-circle me-2"></i>Specifications</h6>
+                    <table class="table table-sm">
+                        {% for spec in product.specifications %}
+                        <tr><td class="fw-bold">{{ spec.spec_name }}</td><td>{{ spec.spec_value }}</td></tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Reviews -->
+        <div class="mt-5">
+            <h4><i class="fas fa-star me-2"></i>Customer Reviews</h4>
+            <hr>
+            {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card mb-3 p-3 rounded">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>{{ review.author.full_name }}</strong>
+                        <div class="product-rating small">
+                            {% for i in range(5) %}
+                            <i class="fas fa-star{% if i >= review.rating %} text-muted{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ review.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+                {% if review.title %}<h6 class="mt-2">{{ review.title }}</h6>{% endif %}
+                <p class="mb-0">{{ review.comment }}</p>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted">No reviews yet. Be the first to review!</p>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <div class="review-form mt-4 p-4 rounded">
+                <h5>Write a Review</h5>
+                <form method="POST" action="{{ url_for('products.add_review', product_id=product.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label>
+                        {{ review_form.rating(class="form-select", style="width:200px;") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        {{ review_form.title(class="form-control", placeholder="Optional review title") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comment</label>
+                        {{ review_form.comment(class="form-control", rows="3", placeholder="Share your experience...") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary-glow">Submit Review</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        <!-- Related Products -->
+        {% if related %}
+        <div class="mt-5">
+            <h4>Related Products</h4>
+            <div class="row g-4 mt-3">
+                {% for p in related %}
+                <div class="col-6 col-md-3">
+                    <div class="product-card">
+                        <a href="{{ url_for('products.detail', slug=p.slug) }}" class="product-image-link">
+                            <img src="{{ p.primary_image }}" alt="{{ p.name }}" class="product-image">
+                        </a>
+                        <div class="product-info">
+                            <h6 class="product-name"><a href="{{ url_for('products.detail', slug=p.slug) }}">{{ p.name }}</a></h6>
+                            <div class="product-price">
+                                {% if p.is_on_sale %}
+                                <span class="current-price">Rs. {{ '{:,.0f}'.format(p.discount_price) }}</span>
+                                <span class="original-price">Rs. {{ '{:,.0f}'.format(p.price) }}</span>
+                                {% else %}
+                                <span class="current-price">Rs. {{ '{:,.0f}'.format(p.price) }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+function changeQty(delta) {
+    const input = document.getElementById('qtyInput');
+    let val = parseInt(input.value) + delta;
+    if (val < 1) val = 1;
+    if (val > parseInt(input.max)) val = parseInt(input.max);
+    input.value = val;
+}
+</script>
+{% endblock %}

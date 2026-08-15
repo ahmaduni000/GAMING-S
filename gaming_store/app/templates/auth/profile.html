@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card glass-card text-center p-4 mb-4">
+                    <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.profile_image) if current_user.profile_image != 'default.png' else 'https://ui-avatars.com/api/?name=' + current_user.full_name + '&background=4f46e5&color=fff&size=128' }}" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+                    <h4>{{ current_user.full_name }}</h4>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                    <span class="badge bg-primary">{{ current_user.primary_role|title }}</span>
+                    <div class="mt-3">
+                        <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-key me-1"></i>Change Password</a>
+                    </div>
+                </div>
+                <div class="card glass-card">
+                    <div class="list-group list-group-flush">
+                        <a href="{{ url_for('customer.dashboard') }}" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                        <a href="{{ url_for('customer.orders') }}" class="list-group-item list-group-item-action"><i class="fas fa-box me-2"></i>My Orders</a>
+                        <a href="{{ url_for('customer.appointments') }}" class="list-group-item list-group-item-action"><i class="fas fa-calendar me-2"></i>My Appointments</a>
+                        <a href="{{ url_for('customer.wishlist') }}" class="list-group-item list-group-item-action"><i class="fas fa-heart me-2"></i>Wishlist</a>
+                        <a href="{{ url_for('customer.reviews') }}" class="list-group-item list-group-item-action"><i class="fas fa-star me-2"></i>My Reviews</a>
+                        <a href="{{ url_for('customer.notifications') }}" class="list-group-item list-group-item-action"><i class="fas fa-bell me-2"></i>Notifications</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card glass-card">
+                    <div class="card-header"><h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Edit Profile</h5></div>
+                    <div class="card-body p-4">
+                        <form method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name *</label>
+                                    {{ form.first_name(class="form-control") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name *</label>
+                                    {{ form.last_name(class="form-control") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    {{ form.phone(class="form-control") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">City</label>
+                                    {{ form.city(class="form-control") }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Address</label>
+                                    {{ form.address(class="form-control", rows="2") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Profile Image</label>
+                                    {{ form.profile_image(class="form-control") }}
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary-glow"><i class="fas fa-save me-1"></i>Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

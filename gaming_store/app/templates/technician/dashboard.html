@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Technician Dashboard - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold"><i class="fas fa-user-wrench me-2"></i>Technician Dashboard</h2>
+            <p class="text-muted mb-0">Welcome back, {{ current_user.full_name }}</p>
+        </div>
+        <span class="badge bg-{{ 'success' if tech and tech.is_available else 'secondary' }} fs-6">
+            {{ 'Available' if tech and tech.is_available else 'Unavailable' }}
+        </span>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm glass-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                                <i class="fas fa-clock text-warning fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="fw-bold mb-0">{{ pending_appointments }}</h3>
+                            <small class="text-muted">Pending Appointments</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm glass-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                                <i class="fas fa-cogs text-info fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="fw-bold mb-0">{{ active_services }}</h3>
+                            <small class="text-muted">Active Services</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm glass-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                                <i class="fas fa-check-circle text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="fw-bold mb-0">{{ completed_services }}</h3>
+                            <small class="text-muted">Completed Services</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm glass-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                <i class="fas fa-calendar-day text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="fw-bold mb-0">{{ today_appointments }}</h3>
+                            <small class="text-muted">Today's Appointments</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Appointments -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-list me-2"></i>My Appointments</h5>
+                    <a href="{{ url_for('technician.appointments') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Booking #</th>
+                                    <th>Customer</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appt in recent_appointments %}
+                                <tr>
+                                    <td><strong>{{ appt.booking_number }}</strong></td>
+                                    <td>{{ appt.customer.full_name }}</td>
+                                    <td>{{ appt.service.name }}</td>
+                                    <td>{{ appt.booking_date.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ status_color(appt.status) }}">{{ appt.status }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('technician.appointment_detail', appointment_id=appt.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not recent_appointments %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No appointments assigned yet</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Announcements -->
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-bullhorn me-2"></i>Announcements</h5>
+                </div>
+                <div class="card-body">
+                    {% for ann in announcements %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <h6 class="fw-bold mb-1">{{ ann.title }}</h6>
+                        <p class="text-muted small mb-1">{{ ann.content[:100] }}{% if ann.content|length > 100 %}...{% endif %}</p>
+                        <small class="text-muted">{{ ann.created_at.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    {% endfor %}
+                    {% if not announcements %}
+                    <p class="text-muted text-center mb-0">No announcements</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card border-0 shadow-sm glass-card mt-3">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-link me-2"></i>Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('technician.appointments') }}" class="btn btn-outline-primary text-start">
+                            <i class="fas fa-calendar me-2"></i>My Appointments
+                        </a>
+                        <a href="{{ url_for('technician.profile') }}" class="btn btn-outline-success text-start">
+                            <i class="fas fa-user-wrench me-2"></i>My Profile
+                        </a>
+                        <a href="{{ url_for('auth.profile') }}" class="btn btn-outline-secondary text-start">
+                            <i class="fas fa-user me-2"></i>Account Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

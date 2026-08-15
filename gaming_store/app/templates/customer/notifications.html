@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Notifications - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">{% include 'customer/sidebar.html' %}</div>
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between mb-4">
+                    <h3><i class="fas fa-bell me-2"></i>Notifications</h3>
+                    <form action="{{ url_for('customer.mark_all_read') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Mark All Read</button>
+                    </form>
+                </div>
+                {% if notifications %}
+                {% for notif in notifications %}
+                <div class="card glass-card mb-2 {% if not notif.is_read %}border-primary{% endif %}">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-{{ 'check-circle text-success' if notif.notification_type == 'success' else 'info-circle text-info' if notif.notification_type == 'info' else 'exclamation-circle text-danger' if notif.notification_type == 'danger' else 'bell text-warning' }} me-2"></i>
+                                <strong>{{ notif.title }}</strong>
+                                <p class="mb-0 text-muted small">{{ notif.message }}</p>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">{{ notif.created_at.strftime('%b %d, %H:%M') }}</small>
+                                {% if not notif.is_read %}
+                                <a href="{{ url_for('customer.mark_notification_read', notif_id=notif.id) }}" class="btn btn-sm btn-outline-primary ms-2">Read</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state text-center py-5"><i class="fas fa-bell-slash fa-4x text-muted mb-3"></i><h4>No notifications</h4></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

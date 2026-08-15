@@ -1,0 +1,16 @@
+<div class="card glass-card mb-4">
+    <div class="card-body text-center py-4">
+        <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.profile_image) if current_user.profile_image != 'default.png' else 'https://ui-avatars.com/api/?name=' + current_user.full_name + '&background=4f46e5&color=fff&size=80' }}" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">
+        <h6>{{ current_user.full_name }}</h6>
+        <small class="text-muted">{{ current_user.primary_role|title }}</small>
+    </div>
+    <div class="list-group list-group-flush">
+        <a href="{{ url_for('customer.dashboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'customer.dashboard' %}active{% endif %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+        <a href="{{ url_for('customer.orders') }}" class="list-group-item list-group-item-action {% if 'order' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-box me-2"></i>My Orders</a>
+        <a href="{{ url_for('customer.appointments') }}" class="list-group-item list-group-item-action {% if 'appointment' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-calendar me-2"></i>Appointments</a>
+        <a href="{{ url_for('customer.wishlist') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'customer.wishlist' %}active{% endif %}"><i class="fas fa-heart me-2"></i>Wishlist</a>
+        <a href="{{ url_for('customer.reviews') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'customer.reviews' %}active{% endif %}"><i class="fas fa-star me-2"></i>My Reviews</a>
+        <a href="{{ url_for('customer.notifications') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'customer.notifications' %}active{% endif %}"><i class="fas fa-bell me-2"></i>Notifications</a>
+        <a href="{{ url_for('auth.profile') }}" class="list-group-item list-group-item-action"><i class="fas fa-user me-2"></i>Profile</a>
+    </div>
+</div>

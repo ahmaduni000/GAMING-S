@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Manage Reviews - GameZone Hub{% endblock %}
+
+{% block content %}<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-star me-2"></i>Manage Reviews</h2>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Product</th>
+                                    <th>Rating</th>
+                                    <th>Review</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in reviews %}
+                                <tr>
+                                    <td><strong>{{ review.author.full_name }}</strong></td>
+                                    <td>{{ review.product.name }}</td>
+                                    <td>
+                                        {% for i in range(review.rating) %}<i class="fas fa-star text-warning"></i>{% endfor %}
+                                        {% for i in range(5 - review.rating) %}<i class="far fa-star text-muted"></i>{% endfor %}
+                                    </td>
+                                    <td>{{ review.comment[:80] }}{% if review.comment|length > 80 %}...{% endif %}</td>
+                                    <td>
+                                        {% if review.is_approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ review.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            {% if not review.is_approved %}
+                                            <form method="POST" action="{{ url_for('admin.approve_review', review_id=review.id) }}" class="d-inline">
+                                                <button type="submit" class="btn btn-outline-success" title="Approve"><i class="fas fa-check"></i></button>
+                                            </form>
+                                            {% endif %}
+                                            <form method="POST" action="{{ url_for('admin.delete_review', review_id=review.id) }}" class="d-inline" onsubmit="return confirm('Delete this review?')">
+                                                <button type="submit" class="btn btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not reviews %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No reviews yet</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

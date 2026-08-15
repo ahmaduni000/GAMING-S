@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if banner else 'Add' }} Banner - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-image me-2"></i>{{ 'Edit' if banner else 'Add' }} Banner</h2>
+                <a href="{{ url_for('admin.banners') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Banners
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title</label>
+                                    {{ form.title(class="form-control", placeholder="Banner title") }}
+                                    {% for error in form.title.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Sort Order</label>
+                                    {{ form.sort_order(class="form-control") }}
+                                    {% for error in form.sort_order.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description</label>
+                                    {{ form.description(class="form-control", rows="2", placeholder="Banner description...") }}
+                                    {% for error in form.description.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Button Text</label>
+                                    {{ form.button_text(class="form-control", placeholder="e.g. Shop Now") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Button URL</label>
+                                    {{ form.button_url(class="form-control", placeholder="/products") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Position</label>
+                                    {{ form.position(class="form-select") }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Banner Image</label>
+                                    <input type="file" name="image" class="form-control" accept="image/*">
+                                </div>
+                            </div>
+
+                            {% if banner and banner.image_url %}
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Current Image</label>
+                                <img src="{{ banner.image_url }}" class="rounded" style="max-height:100px;" alt="">
+                            </div>
+                            {% endif %}
+
+                            <div class="col-12">
+                                <hr>
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_active(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Active</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-1"></i>{{ 'Update' if banner else 'Create' }} Banner
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

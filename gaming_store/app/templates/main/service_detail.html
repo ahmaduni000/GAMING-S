@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ service.name }} - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('services.listing') }}">Services</a></li>
+                <li class="breadcrumb-item active">{{ service.name }}</li>
+            </ol>
+        </nav>
+        <div class="row g-5">
+            <div class="col-lg-7">
+                <h1 class="mb-3">{{ service.name }}</h1>
+                <div class="d-flex gap-3 mb-4">
+                    <span class="badge bg-primary fs-6"><i class="fas fa-dollar-sign me-1"></i>Rs. {{ '{:,.0f}'.format(service.fee) }}</span>
+                    <span class="badge bg-info fs-6"><i class="fas fa-clock me-1"></i>{{ service.estimated_duration or 'Varies' }}</span>
+                    <span class="badge bg-warning fs-6"><i class="fas fa-star me-1"></i>{{ service.rating or '0' }}</span>
+                </div>
+                <div class="mb-4"><p class="lead">{{ service.description }}</p></div>
+                {% if service.features %}
+                <div class="mb-4">
+                    <h5><i class="fas fa-check-double me-2"></i>Service Features</h5>
+                    <ul class="feature-list">
+                        {% for feature in service.features.split('\n') if feature.strip() %}
+                        <li><i class="fas fa-check text-success me-2"></i>{{ feature.strip() }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-5">
+                <div class="card glass-card">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3">Book This Service</h4>
+                        <div class="mb-3"><strong>Fee:</strong> Rs. {{ '{:,.0f}'.format(service.fee) }}</div>
+                        <div class="mb-3"><strong>Duration:</strong> {{ service.estimated_duration or 'Varies' }}</div>
+                        <div class="mb-3"><strong>Available Technicians:</strong></div>
+                        {% for tech in technicians %}
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar-sm me-2"><i class="fas fa-user-cog"></i></div>
+                            <div><small class="fw-bold">{{ tech.user.full_name }}</small><br><small class="text-muted">{{ tech.experience_years }} yrs exp | {{ tech.rating }}★</small></div>
+                        </div>
+                        {% endfor %}
+                        <a href="{{ url_for('services.book', service_id=service.id) }}" class="btn btn-primary-glow w-100 mt-3 btn-lg"><i class="fas fa-calendar-check me-2"></i>Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

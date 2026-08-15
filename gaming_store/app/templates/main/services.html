@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Services - GameZone Store{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div class="container text-center">
+        <h1><i class="fas fa-wrench me-2"></i>Our Services</h1>
+        <p>Professional gaming services by expert technicians</p>
+    </div>
+</section>
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card-full">
+                    <div class="service-card-icon"><i class="fas fa-tools"></i></div>
+                    <h4>{{ service.name }}</h4>
+                    <p>{{ service.description[:150] }}{% if service.description and service.description|length > 150 %}...{% endif %}</p>
+                    <div class="service-meta-row">
+                        <span><i class="fas fa-dollar-sign me-1"></i>Rs. {{ '{:,.0f}'.format(service.fee) }}</span>
+                        <span><i class="fas fa-clock me-1"></i>{{ service.estimated_duration or 'Varies' }}</span>
+                        <span><i class="fas fa-star me-1"></i>{{ service.rating or '0' }}</span>
+                    </div>
+                    <a href="{{ url_for('services.detail', slug=service.slug) }}" class="btn btn-primary-glow w-100 mt-3">View Details & Book</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if not services %}
+        <div class="empty-state text-center py-5">
+            <i class="fas fa-tools fa-4x text-muted mb-3"></i>
+            <h4>No services available</h4>
+            <p class="text-muted">Check back later for our gaming services.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

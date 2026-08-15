@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Appointment {{ booking.booking_number }} - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-calendar-check me-2"></i>Appointment {{ booking.booking_number }}</h2>
+                <a href="{{ url_for('admin.appointments') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Appointments
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Booking Info -->
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Appointment Details</h5></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6"><label class="text-muted small">Booking #</label><p class="fw-bold">{{ booking.booking_number }}</p></div>
+                                <div class="col-md-6"><label class="text-muted small">Service</label><p class="fw-bold">{{ booking.service.name }}</p></div>
+                                <div class="col-md-6"><label class="text-muted small">Date & Time</label><p class="fw-bold">{{ booking.booking_date.strftime('%B %d, %Y') }} at {{ booking.booking_time }}</p></div>
+                                <div class="col-md-6"><label class="text-muted small">Status</label><p><span class="badge bg-{{ status_color(booking.status) }} fs-6">{{ booking.status }}</span></p></div>
+                                <div class="col-md-6"><label class="text-muted small">Payment</label><p><span class="badge bg-{{ 'success' if booking.payment_method == 'cod' else 'primary' }} fs-6">{{ booking.payment_method|upper }}</span></p></div>
+                                <div class="col-md-6"><label class="text-muted small">Amount</label><p class="fw-bold text-primary fs-5">{{ '%.2f'|format(booking.total_amount) }}</p></div>
+                                {% if booking.location %}<div class="col-12"><label class="text-muted small">Location</label><p class="fw-bold">{{ booking.location }}</p></div>{% endif %}
+                                {% if booking.notes %}<div class="col-12"><label class="text-muted small">Notes</label><p>{{ booking.notes }}</p></div>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer -->
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0">Customer</h5></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="text-muted small">Name</label><p class="fw-bold">{{ booking.customer.full_name }}</p></div>
+                                <div class="col-md-4"><label class="text-muted small">Email</label><p class="fw-bold">{{ booking.customer.email }}</p></div>
+                                <div class="col-md-4"><label class="text-muted small">Phone</label><p class="fw-bold">{{ booking.customer.phone or 'N/A' }}</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status History -->
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-history me-2"></i>Status History</h5></div>
+                        <div class="card-body">
+                            {% for h in history %}
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="bg-{{ status_color(h.new_status) }} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                                        <i class="fas fa-circle text-{{ status_color(h.new_status) }}" style="font-size:12px;"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>{{ h.old_status }} → {{ h.new_status }}</strong>
+                                        <small class="text-muted">{{ h.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                    </div>
+                                    {% if h.note %}<small class="text-muted">{{ h.note }}</small>{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if not history %}<p class="text-muted text-center mb-0">No history</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card mb-4">
+                        <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-edit me-2"></i>Update Appointment</h5></div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Status</label>
+                                    {{ form.status(class="form-select") }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Assign Technician</label>
+                                    {{ form.technician_id(class="form-select") }}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Note</label>
+                                    {{ form.note(class="form-control", rows="3", placeholder="Status note...") }}
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save me-1"></i>Update Appointment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

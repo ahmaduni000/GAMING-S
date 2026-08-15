@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}My Orders - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">{% include 'customer/sidebar.html' %}</div>
+            <div class="col-lg-9">
+                <h3 class="mb-4">My Orders</h3>
+                <div class="d-flex gap-2 mb-4 flex-wrap">
+                    <a href="{{ url_for('customer.orders') }}" class="btn btn-sm {% if not current_status %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                    {% for s in ['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED'] %}
+                    <a href="{{ url_for('customer.orders', status=s) }}" class="btn btn-sm {% if current_status == s %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ s }}</a>
+                    {% endfor %}
+                </div>
+                {% if orders.items %}
+                {% for order in orders.items %}
+                <div class="card glass-card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-3"><strong>{{ order.order_number }}</strong><br><small class="text-muted">{{ order.created_at.strftime('%b %d, %Y') }}</small></div>
+                            <div class="col-md-2"><span class="badge bg-{{ 'success' if order.status == 'DELIVERED' else 'warning' if order.status in ['PENDING','CONFIRMED'] else 'info' }}">{{ order.status }}</span></div>
+                            <div class="col-md-2"><span class="badge bg-{{ 'success' if order.payment_status == 'VERIFIED' else 'warning' if order.payment_status == 'PENDING' else 'danger' if order.payment_status == 'REJECTED' else 'info' }}">{{ order.payment_status }}</span></div>
+                            <div class="col-md-2"><strong>Rs. {{ '{:,.0f}'.format(order.total) }}</strong></div>
+                            <div class="col-md-3 text-end"><a href="{{ url_for('customer.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">View Details</a></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if orders.pages > 1 %}
+                <nav><ul class="pagination justify-content-center">
+                    {% if orders.has_prev %}<li class="page-item"><a class="page-link" href="{{ url_for('customer.orders', page=orders.prev_num, status=current_status) }}">&laquo;</a></li>{% endif %}
+                    {% for p in orders.iter_pages() %}{% if p %}<li class="page-item {% if p == orders.page %}active{% endif %}"><a class="page-link" href="{{ url_for('customer.orders', page=p, status=current_status) }}">{{ p }}</a></li>{% else %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}{% endfor %}
+                    {% if orders.has_next %}<li class="page-item"><a class="page-link" href="{{ url_for('customer.orders', page=orders.next_num, status=current_status) }}">&raquo;</a></li>{% endif %}
+                </ul></nav>
+                {% endif %}
+                {% else %}
+                <div class="empty-state text-center py-5"><i class="fas fa-box fa-4x text-muted mb-3"></i><h4>No orders found</h4><a href="{{ url_for('products.listing') }}" class="btn btn-primary-glow">Start Shopping</a></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

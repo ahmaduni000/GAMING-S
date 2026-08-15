@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Customer {{ user.full_name }} - GameZone Hub{% endblock %}
+
+{% block content %}<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-user me-2"></i>{{ user.full_name }}</h2>
+                <a href="{{ url_for('admin.customers') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Customers
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Customer Info -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="fw-bold mb-0">Customer Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="text-muted small">Username</label>
+                                    <p class="fw-bold">{{ user.username }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <label class="text-muted small">Email</label>
+                                    <p class="fw-bold">{{ user.email }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <label class="text-muted small">Phone</label>
+                                    <p class="fw-bold">{{ user.phone or 'N/A' }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <label class="text-muted small">Status</label>
+                                    <p><span class="badge bg-{{ 'success' if user.is_active else 'danger' }}">{{ 'Active' if user.is_active else 'Inactive' }}</span></p>
+                                </div>
+                                <div class="col-6">
+                                    <label class="text-muted small">Joined</label>
+                                    <p class="fw-bold">{{ user.created_at.strftime('%B %d, %Y') }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <label class="text-muted small">Total Orders</label>
+                                    <p class="fw-bold">{{ orders|length }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm glass-card">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="fw-bold mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <form method="POST" action="{{ url_for('admin.toggle_customer', user_id=user.id) }}">
+                                    <button type="submit" class="btn btn-{{ 'warning' if user.is_active else 'success' }} w-100">
+                                        <i class="fas fa-{{ 'ban' if user.is_active else 'check' }} me-1"></i>
+                                        {{ 'Deactivate' if user.is_active else 'Activate' }} Account
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin.delete_customer', user_id=user.id) }}" onsubmit="return confirm('Delete this customer permanently?')">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="fas fa-trash me-1"></i>Delete Customer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders -->
+            <div class="card border-0 shadow-sm glass-card mt-4">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-shopping-cart me-2"></i>Order History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td><strong>{{ order.order_number }}</strong></td>
+                                    <td>{{ order.item_count }} item(s)</td>
+                                    <td class="fw-bold">{{ '%.2f'|format(order.total) }}</td>
+                                    <td><span class="badge bg-{{ 'success' if order.payment_method == 'cod' else 'primary' }}">{{ order.payment_method|upper }}</span></td>
+                                    <td><span class="badge bg-{{ 'success' if order.status == 'DELIVERED' else 'primary' if order.status == 'CONFIRMED' else 'warning' if order.status == 'PENDING' else 'info' }}">{{ order.status }}</span></td>
+                                    <td>{{ order.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td><a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td>
+                                </tr>
+                                {% endfor %}
+                                {% if not orders %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No orders yet</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

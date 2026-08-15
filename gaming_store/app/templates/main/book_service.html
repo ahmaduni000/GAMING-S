@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ service.name }} - GameZone Store{% endblock %}
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card glass-card">
+                    <div class="card-header"><h4 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Book: {{ service.name }}</h4></div>
+                    <div class="card-body p-4">
+                        <form method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="alert alert-info"><strong>Service Fee:</strong> Rs. {{ '{:,.0f}'.format(service.fee) }} | <strong>Duration:</strong> {{ service.estimated_duration or 'Varies' }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Preferred Date *</label>
+                                    {{ form.booking_date(class="form-control", type="date") }}
+                                    {% if form.booking_date.errors %}<small class="text-danger">{{ form.booking_date.errors[0] }}</small>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Preferred Time *</label>
+                                    {{ form.booking_time(class="form-select") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Technician</label>
+                                    {{ form.technician_id(class="form-select") }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Payment Method *</label>
+                                    {{ form.payment_method(class="form-select") }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Service Location *</label>
+                                    {{ form.service_location(class="form-control", placeholder="Full address for service") }}
+                                    {% if form.service_location.errors %}<small class="text-danger">{{ form.service_location.errors[0] }}</small>{% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Problem Description</label>
+                                    {{ form.problem_description(class="form-control", rows="4", placeholder="Describe your issue...") }}
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary-glow btn-lg w-100"><i class="fas fa-check me-2"></i>Confirm Booking</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
