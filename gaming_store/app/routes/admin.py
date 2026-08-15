@@ -40,6 +40,11 @@ def dashboard():
     recent_orders = Order.query.order_by(Order.created_at.desc()).limit(5).all()
     recent_messages = ContactMessage.query.filter_by(is_read=False).order_by(ContactMessage.created_at.desc()).limit(5).all()
 
+    recent_products = Product.query.order_by(Product.created_at.desc()).limit(6).all()
+    recent_services = Service.query.order_by(Service.created_at.desc()).limit(6).all()
+    recent_technicians = Technician.query.order_by(Technician.created_at.desc()).limit(6).all()
+
+
     monthly_revenue = []
     monthly_labels = []
     for i in range(5, -1, -1):
@@ -60,6 +65,8 @@ def dashboard():
                          low_stock=low_stock, total_services=total_services,
                          total_appointments=total_appointments, pending_payments=pending_payments,
                          recent_orders=recent_orders, recent_messages=recent_messages,
+                         recent_products=recent_products, recent_services=recent_services,
+                         recent_technicians=recent_technicians,
                          monthly_revenue=monthly_revenue, monthly_labels=monthly_labels)
 
 

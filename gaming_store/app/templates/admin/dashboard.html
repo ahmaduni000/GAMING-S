@@ -180,6 +180,105 @@
                 </div>
             </div>
 
+            <!-- Recent Products / Services / Technicians with Images -->
+            <div class="row g-4 mt-1">
+                <!-- Recent Products -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-box me-2 text-secondary"></i>Recent Products</h5>
+                            <a href="{{ url_for('admin.products') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_products %}
+                            <div class="row g-2">
+                                {% for product in recent_products %}
+                                <div class="col-6 col-md-4">
+                                    <a href="{{ url_for('admin.product_edit', product_id=product.id) }}" class="text-decoration-none">
+                                        <div class="text-center">
+                                            <img src="{{ product.primary_image }}" alt="{{ product.name }}" class="rounded mb-1" style="width:100%;height:70px;object-fit:cover;">
+                                            <div class="small text-truncate" style="max-width:100%;">{{ product.name }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center mb-0">No products yet</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Services -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-cog me-2 text-success"></i>Recent Services</h5>
+                            <a href="{{ url_for('admin.services') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_services %}
+                            <div class="row g-2">
+                                {% for service in recent_services %}
+                                <div class="col-6 col-md-4">
+                                    <a href="{{ url_for('admin.service_form') }}" class="text-decoration-none">
+                                        <div class="text-center">
+                                            {% if service.image %}
+                                            <img src="{{ service.image }}" alt="{{ service.name }}" class="rounded mb-1" style="width:100%;height:70px;object-fit:cover;">
+                                            {% else %}
+                                            <div class="bg-light rounded mb-1 d-flex align-items-center justify-content-center" style="width:100%;height:70px;">
+                                                <i class="fas fa-cog text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div class="small text-truncate" style="max-width:100%;">{{ service.name }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center mb-0">No services yet</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Technicians -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm glass-card h-100">
+                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0"><i class="fas fa-user-wrench me-2 text-info"></i>Technicians</h5>
+                            <a href="{{ url_for('admin.technicians') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_technicians %}
+                            <div class="row g-2">
+                                {% for tech in recent_technicians %}
+                                <div class="col-6 col-md-4">
+                                    <a href="{{ url_for('admin.technicians') }}" class="text-decoration-none">
+                                        <div class="text-center">
+                                            {% if tech.user.profile_image and tech.user.profile_image != 'default.png' %}
+                                            <img src="{{ url_for('static', filename='uploads/profiles/' + tech.user.profile_image) }}" alt="{{ tech.user.full_name }}" class="rounded-circle mb-1" style="width:70px;height:70px;object-fit:cover;">
+                                            {% else %}
+                                            <div class="bg-light rounded-circle mb-1 d-flex align-items-center justify-content-center mx-auto" style="width:70px;height:70px;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div class="small text-truncate" style="max-width:100%;">{{ tech.user.full_name }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-muted text-center mb-0">No technicians yet</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent Orders -->
             <div class="card border-0 shadow-sm glass-card mt-4">
                 <div class="card-header bg-transparent border-0 d-flex justify-content-between">
