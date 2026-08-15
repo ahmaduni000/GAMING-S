@@ -17,7 +17,7 @@
 
             <div class="card border-0 shadow-sm glass-card">
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
 
                         <div class="row g-3">
@@ -30,6 +30,19 @@
                                 </div>
                             </div>
                             {% endif %}
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Profile Photo</label>
+                                    {% if tech and tech.user.profile_image and tech.user.profile_image != 'default.png' %}
+                                    <div class="mb-2">
+                                        <img src="{{ url_for('static', filename='uploads/profiles/' + tech.user.profile_image) }}" alt="{{ tech.user.full_name }}" class="rounded-circle" style="width:70px;height:70px;object-fit:cover;">
+                                    </div>
+                                    {% endif %}
+                                    {{ form.profile_image(class="form-control", accept="image/*") }}
+                                    {% for error in form.profile_image.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
 
                             <div class="col-md-6">
                                 <div class="mb-3">

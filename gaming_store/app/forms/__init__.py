@@ -227,6 +227,9 @@ class UserForm(FlaskForm):
 
 class TechnicianForm(FlaskForm):
     user_id = SelectField('User', coerce=int, validators=[DataRequired()])
+    profile_image = FileField('Profile Photo', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only!')
+    ])
     skills = StringField('Skills', validators=[Optional()])
     experience_years = IntegerField('Experience (Years)', validators=[Optional(), NumberRange(min=0)])
     bio = TextAreaField('Bio', validators=[Optional()])

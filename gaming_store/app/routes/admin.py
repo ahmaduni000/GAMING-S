@@ -499,6 +499,14 @@ def technician_form(tech_id=None):
             tech_role = Role.query.filter_by(name='technician').first()
             if tech_role and tech_role not in user.roles:
                 user.roles.append(tech_role)
+        # Handle profile photo upload
+        if form.profile_image.data:
+            target_user = tech.user if tech else user
+            path = save_upload(form.profile_image.data, 'profiles')
+            if path:
+                if target_user.profile_image and target_user.profile_image != 'default.png':
+                    delete_upload(target_user.profile_image)
+                target_user.profile_image = path.rsplit('/', 1)[-1]
         db.session.commit()
         flash('Technician saved!', 'success')
         return redirect(url_for('admin.technicians'))
