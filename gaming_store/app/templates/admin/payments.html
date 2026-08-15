@@ -32,7 +32,7 @@
                                     <td><strong>{{ payment.order.order_number }}</strong></td>
                                     <td>{{ payment.order.customer.full_name }}</td>
                                     <td class="fw-bold">{{ '%.2f'|format(payment.amount) }}</td>
-                                    <td><span class="badge bg-primary">{{ payment.payment_method|upper }}</span></td>
+                                    <td><span class="badge bg-primary">{{ get_payment_method_label(payment.method) }}</span></td>
                                     <td><span class="badge bg-{{ 'success' if payment.status == 'VERIFIED' else 'warning' if payment.status == 'WAITING_FOR_VERIFICATION' else 'danger' }}">{{ payment.status }}</span></td>
                                     <td>{{ payment.created_at.strftime('%b %d, %Y') }}</td>
                                     <td>

@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="text-muted small">Payment Method</label>
-                                    <p><span class="badge bg-primary fs-6">{{ payment.payment_method|upper }}</span></p>
+                                    <p><span class="badge bg-primary fs-6">{{ get_payment_method_label(payment.method) }}</span></p>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="text-muted small">Status</label>
@@ -51,13 +51,19 @@
                     </div>
 
                     <!-- Payment Proof Screenshot -->
-                    {% if payment.proof and payment.proof.screenshot_path %}
+                    {% if payment.proof and payment.proof.screenshot_url %}
                     <div class="card border-0 shadow-sm glass-card mb-4">
                         <div class="card-header bg-transparent border-0"><h5 class="fw-bold mb-0"><i class="fas fa-image me-2"></i>Payment Screenshot</h5></div>
                         <div class="card-body text-center">
-                            <img src="{{ payment.proof.screenshot_path }}" class="img-fluid rounded shadow" style="max-height:400px;" alt="Payment Proof">
-                            {% if payment.proof.description %}
-                            <p class="mt-2 text-muted"><strong>Note:</strong> {{ payment.proof.description }}</p>
+                            <img src="{{ payment.proof.screenshot_url }}" class="img-fluid rounded shadow" style="max-height:400px;" alt="Payment Proof">
+                            {% if payment.proof.sender_name %}
+                            <p class="mt-2 text-muted"><strong>Sender:</strong> {{ payment.proof.sender_name }}</p>
+                            {% endif %}
+                            {% if payment.proof.sender_account %}
+                            <p class="text-muted"><strong>Account/Mobile:</strong> {{ payment.proof.sender_account }}</p>
+                            {% endif %}
+                            {% if payment.proof.transaction_reference %}
+                            <p class="text-muted"><strong>Reference:</strong> {{ payment.proof.transaction_reference }}</p>
                             {% endif %}
                         </div>
                     </div>

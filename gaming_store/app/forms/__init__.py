@@ -5,6 +5,18 @@ from wtforms import (StringField, PasswordField, TextAreaField, IntegerField,
 from wtforms.validators import (DataRequired, Email, Length, EqualTo, Optional,
                                  NumberRange, ValidationError)
 from app.models.user import User
+from app.utils.helpers import (
+    PAYMENT_COD, PAYMENT_BANK, PAYMENT_EASYPAISA, PAYMENT_JAZZCASH,
+    PAYMENT_METHOD_LABELS
+)
+
+# Payment method choices shared across forms
+PAYMENT_METHOD_CHOICES = [
+    (PAYMENT_COD, PAYMENT_METHOD_LABELS[PAYMENT_COD]),
+    (PAYMENT_BANK, PAYMENT_METHOD_LABELS[PAYMENT_BANK]),
+    (PAYMENT_EASYPAISA, PAYMENT_METHOD_LABELS[PAYMENT_EASYPAISA]),
+    (PAYMENT_JAZZCASH, PAYMENT_METHOD_LABELS[PAYMENT_JAZZCASH]),
+]
 
 
 class LoginForm(FlaskForm):
@@ -116,9 +128,8 @@ class ServiceBookingForm(FlaskForm):
     ], validators=[DataRequired()])
     service_location = StringField('Service Location', validators=[DataRequired(), Length(5, 200)])
     problem_description = TextAreaField('Problem Description', validators=[Optional()])
-    payment_method = SelectField('Payment Method', choices=[
-        ('cod', 'Cash on Delivery'), ('online', 'Online Payment')
-    ], validators=[DataRequired()])
+    payment_method = SelectField('Payment Method', choices=PAYMENT_METHOD_CHOICES,
+                                 validators=[DataRequired()])
 
 
 class OrderStatusForm(FlaskForm):
@@ -185,6 +196,8 @@ class PaymentSettingsForm(FlaskForm):
     account_title = StringField('Account Title', validators=[Optional()])
     account_number = StringField('Account Number', validators=[Optional()])
     iban = StringField('IBAN', validators=[Optional()])
+    easypaisa_number = StringField('Easypaisa Number', validators=[Optional()])
+    jazzcash_number = StringField('JazzCash Number', validators=[Optional()])
     mobile_wallet_name = StringField('Mobile Wallet Name', validators=[Optional()])
     mobile_wallet_number = StringField('Mobile Wallet Number', validators=[Optional()])
     instructions = TextAreaField('Payment Instructions', validators=[Optional()])

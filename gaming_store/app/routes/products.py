@@ -8,7 +8,10 @@ from app.models.settings import PaymentSettings
 from app.models.communication import Notification
 from app.forms import ReviewForm
 from app.models.review import Review
-from app.utils.helpers import generate_order_number, format_currency
+from app.utils.helpers import (
+    generate_order_number, format_currency,
+    is_online_payment, PAYMENT_COD
+)
 from app.utils.decorators import customer_required
 from datetime import datetime
 
@@ -18,123 +21,79 @@ products_bp = Blueprint('products', __name__)
 @products_bp.route('/')
 def listing():
     page = request.args.get('page', 1, type=int)
-    per_page = 12
-    query = Product.query.filter_by(is_active=True)
-
-    # Search
+    category_id = request.args.get('category', type=int)
     search = request.args.get('q', '')
+    sort = request.args.get('sort', 'newest')
+
+    query = Product.query.filter_by(is_active=True)
+    if category_id:
+        query = query.filter_by(category_id=category_id)
     if search:
         query = query.filter(Product.name.ilike(f'%{search}%'))
 
-    # Category filter
-    category_id = request.args.get('category', type=int)
-    if category_id:
-        query = query.filter_by(category_id=category_id)
-
-    # Brand filter
-    brand = request.args.get('brand', '')
-    if brand:
-        query = query.filter(Product.brand.ilike(f'%{brand}%'))
-
-    # Price filter
-    min_price = request.args.get('min_price', type=float)
-    max_price = request.args.get('max_price', type=float)
-    if min_price:
-        query = query.filter(Product.price >= min_price)
-    if max_price:
-        query = query.filter(Product.price <= max_price)
-
-    # Rating filter
-    min_rating = request.args.get('rating', type=float)
-    if min_rating:
-        query = query.filter(Product.rating >= min_rating)
-
-    # Stock filter
-    in_stock = request.args.get('in_stock')
-    if in_stock:
-        query = query.filter(Product.stock_quantity > 0)
-
-    # Sorting
-    sort = request.args.get('sort', 'newest')
-    if sort == 'price_asc':
-        query = query.order_by(Product.price.asc())
-    elif sort == 'price_desc':
-        query = query.order_by(Product.price.desc())
-    elif sort == 'popular':
-        query = query.order_by(Product.total_sales.desc())
-    elif sort == 'discount':
-        query = query.order_by(Product.discount_percent.desc())
+    if sort == 'price_low':
+        query = query.order_by(Product.effective_price.asc())
+    elif sort == 'price_high':
+        query = query.order_by(Product.effective_price.desc())
+    elif sort == 'name':
+        query = query.order_by(Product.name.asc())
     else:
         query = query.order_by(Product.created_at.desc())
 
-    products = query.paginate(page=page, per_page=per_page, error_out=False)
-    categories = Category.query.filter_by(is_active=True, parent_id=None).all()
-    brands = db.session.query(Product.brand).filter(Product.brand.isnot(None)).distinct().all()
-    brands = [b[0] for b in brands if b[0]]
-
-    return render_template('main/products.html',
-                         products=products, categories=categories,
-                         brands=brands, search=search,
-                         current_category=category_id, current_sort=sort)
+    products = query.paginate(page=page, per_page=12)
+    categories = Category.query.filter_by(is_active=True).all()
+    return render_template('main/products.html', products=products,
+                         categories=categories, current_category=category_id,
+                         search=search, sort=sort)
 
 
 @products_bp.route('/<slug>')
 def detail(slug):
     product = Product.query.filter_by(slug=slug, is_active=True).first_or_404()
-    reviews = Review.query.filter_by(product_id=product.id, is_approved=True).order_by(Review.created_at.desc()).all()
     related = Product.query.filter_by(category_id=product.category_id, is_active=True).filter(Product.id != product.id).limit(4).all()
-    review_form = ReviewForm()
-
-    in_wishlist = False
-    if current_user.is_authenticated and current_user.wishlist:
-        in_wishlist = WishlistItem.query.filter_by(
-            wishlist_id=current_user.wishlist.id, product_id=product.id
-        ).first() is not None
-
-    return render_template('main/product_detail.html',
-                         product=product, reviews=reviews,
-                         related=related, review_form=review_form,
-                         in_wishlist=in_wishlist)
+    reviews = Review.query.filter_by(product_id=product.id, is_approved=True).order_by(Review.created_at.desc()).all()
+    return render_template('main/product_detail.html', product=product,
+                         related=related, reviews=reviews)
 
 
 @products_bp.route('/cart')
 @login_required
 def cart():
     cart_obj = Cart.query.filter_by(user_id=current_user.id).first()
-    if not cart_obj:
-        cart_obj = Cart(user_id=current_user.id)
-        db.session.add(cart_obj)
-        db.session.commit()
-    items = CartItem.query.filter_by(cart_id=cart_obj.id).all()
+    items = cart_obj.items.all() if cart_obj else []
     total = sum(item.subtotal for item in items)
     total_discount = sum(item.discount_amount for item in items)
-    delivery_fee = 200 if total > 0 else 0
-    final_total = total + delivery_fee
-    return render_template('main/cart.html', cart=cart_obj, items=items,
-                         total=total, total_discount=total_discount,
-                         delivery_fee=delivery_fee, final_total=final_total)
+    return render_template('main/cart.html', items=items, total=total, total_discount=total_discount)
 
 
-@products_bp.route('/cart/add', methods=['POST'])
+@products_bp.route('/cart/add/<int:product_id>', methods=['POST'])
 @login_required
-def add_to_cart():
-    product_id = request.form.get('product_id', type=int)
-    quantity = request.form.get('quantity', 1, type=int)
+def add_to_cart(product_id):
     product = Product.query.get_or_404(product_id)
-    if product.stock_quantity < quantity:
-        flash('Insufficient stock.', 'danger')
+    if not product.is_active:
+        flash('This product is not available.', 'warning')
         return redirect(url_for('products.detail', slug=product.slug))
+
+    quantity = int(request.form.get('quantity', 1))
+    if quantity < 1:
+        quantity = 1
+    if quantity > product.stock_quantity:
+        quantity = product.stock_quantity
+        flash(f'Only {product.stock_quantity} items in stock.', 'warning')
+
     cart_obj = Cart.query.filter_by(user_id=current_user.id).first()
     if not cart_obj:
         cart_obj = Cart(user_id=current_user.id)
         db.session.add(cart_obj)
         db.session.flush()
-    item = CartItem.query.filter_by(cart_id=cart_obj.id, product_id=product_id).first()
-    if item:
-        item.quantity += quantity
+
+    cart_item = CartItem.query.filter_by(cart_id=cart_obj.id, product_id=product_id).first()
+    if cart_item:
+        cart_item.quantity += quantity
     else:
-        item = CartItem(cart_id=cart_obj.id, product_id=product_id, quantity=quantity)
-        db.session.add(item)
+        cart_item = CartItem(cart_id=cart_obj.id, product_id=product_id, quantity=quantity)
+        db.session.add(cart_item)
+
     db.session.commit()
     flash(f'{product.name} added to cart!', 'success')
     return redirect(url_for('products.cart'))
@@ -143,31 +102,34 @@ def add_to_cart():
 @products_bp.route('/cart/update/<int:item_id>', methods=['POST'])
 @login_required
 def update_cart(item_id):
-    item = CartItem.query.get_or_404(item_id)
-    if item.cart.user_id != current_user.id:
-        flash('Unauthorized action.', 'danger')
+    cart_item = CartItem.query.get_or_404(item_id)
+    if cart_item.cart.user_id != current_user.id:
+        flash('Unauthorized.', 'danger')
         return redirect(url_for('products.cart'))
-    quantity = request.form.get('quantity', 1, type=int)
+
+    quantity = int(request.form.get('quantity', cart_item.quantity))
     if quantity <= 0:
-        db.session.delete(item)
+        db.session.delete(cart_item)
+        flash('Item removed from cart.', 'info')
     else:
-        if item.product.stock_quantity < quantity:
-            flash('Insufficient stock.', 'danger')
-            return redirect(url_for('products.cart'))
-        item.quantity = quantity
+        if quantity > cart_item.product.stock_quantity:
+            quantity = cart_item.product.stock_quantity
+            flash(f'Only {cart_item.product.stock_quantity} items in stock.', 'warning')
+        cart_item.quantity = quantity
+        flash('Cart updated.', 'success')
+
     db.session.commit()
-    flash('Cart updated.', 'success')
     return redirect(url_for('products.cart'))
 
 
 @products_bp.route('/cart/remove/<int:item_id>', methods=['POST'])
 @login_required
 def remove_from_cart(item_id):
-    item = CartItem.query.get_or_404(item_id)
-    if item.cart.user_id != current_user.id:
-        flash('Unauthorized action.', 'danger')
+    cart_item = CartItem.query.get_or_404(item_id)
+    if cart_item.cart.user_id != current_user.id:
+        flash('Unauthorized.', 'danger')
         return redirect(url_for('products.cart'))
-    db.session.delete(item)
+    db.session.delete(cart_item)
     db.session.commit()
     flash('Item removed from cart.', 'success')
     return redirect(url_for('products.cart'))
@@ -205,7 +167,12 @@ def place_order():
     delivery_fee = 200
     final_total = total + delivery_fee
 
-    payment_method = request.form.get('payment_method', 'cod')
+    payment_method = request.form.get('payment_method', PAYMENT_COD)
+    if payment_method not in (PAYMENT_COD, 'bank_transfer', 'easypaisa', 'jazzcash'):
+        payment_method = PAYMENT_COD
+
+    # Online payments start as PENDING (awaiting proof upload + verification)
+    payment_status = 'PENDING' if is_online_payment(payment_method) else 'PENDING'
 
     order = Order(
         order_number=generate_order_number(),
@@ -215,7 +182,7 @@ def place_order():
         delivery_fee=delivery_fee,
         total=final_total,
         payment_method=payment_method,
-        payment_status='PENDING',
+        payment_status=payment_status,
         notes=request.form.get('notes', '')
     )
     db.session.add(order)
@@ -260,7 +227,11 @@ def place_order():
     db.session.add(notif)
 
     db.session.commit()
-    flash(f'Order {order.order_number} placed successfully!', 'success')
+
+    if is_online_payment(payment_method):
+        flash(f'Order {order.order_number} placed! Please upload your payment receipt to confirm.', 'success')
+    else:
+        flash(f'Order {order.order_number} placed successfully!', 'success')
     return redirect(url_for('customer.order_detail', order_id=order.id))
 
 

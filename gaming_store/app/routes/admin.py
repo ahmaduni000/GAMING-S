@@ -667,6 +667,8 @@ def payment_settings():
         ps.account_title = form.account_title.data
         ps.account_number = form.account_number.data
         ps.iban = form.iban.data
+        ps.easypaisa_number = form.easypaisa_number.data
+        ps.jazzcash_number = form.jazzcash_number.data
         ps.mobile_wallet_name = form.mobile_wallet_name.data
         ps.mobile_wallet_number = form.mobile_wallet_number.data
         ps.instructions = form.instructions.data

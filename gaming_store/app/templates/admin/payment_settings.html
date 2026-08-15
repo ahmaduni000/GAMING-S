@@ -16,7 +16,7 @@
                     <form method="POST">
                         {{ form.hidden_tag() }}
 
-                        <h5 class="fw-bold mb-3"><i class="fas fa-university me-2"></i>Bank Account Details</h5>
+                        <h5 class="fw-bold mb-3"><i class="fas fa-university me-2"></i>Bank Transfer</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -50,18 +50,32 @@
 
                         <hr>
 
-                        <h5 class="fw-bold mb-3"><i class="fas fa-mobile-alt me-2"></i>Mobile Wallet</h5>
+                        <h5 class="fw-bold mb-3"><i class="fas fa-mobile-alt me-2"></i>Mobile Wallets</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Wallet Name</label>
-                                    {{ form.mobile_wallet_name(class="form-control", placeholder="e.g. JazzCash, EasyPaisa") }}
+                                    <label class="form-label fw-bold">Easypaisa Number</label>
+                                    {{ form.easypaisa_number(class="form-control", placeholder="e.g. +92-300-1234567") }}
+                                    {% for error in form.easypaisa_number.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">JazzCash Number</label>
+                                    {{ form.jazzcash_number(class="form-control", placeholder="e.g. +92-300-1234567") }}
+                                    {% for error in form.jazzcash_number.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Other Wallet Name</label>
+                                    {{ form.mobile_wallet_name(class="form-control", placeholder="e.g. NayaPay, SadaPay") }}
                                     {% for error in form.mobile_wallet_name.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Wallet Number</label>
+                                    <label class="form-label fw-bold">Other Wallet Number</label>
                                     {{ form.mobile_wallet_number(class="form-control", placeholder="Mobile number") }}
                                     {% for error in form.mobile_wallet_number.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
                                 </div>

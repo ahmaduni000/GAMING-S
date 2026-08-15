@@ -812,16 +812,22 @@ def seed_database():
             iban='PK09SCBL0000001234567890',
             mobile_wallet_name='JazzCash',
             mobile_wallet_number='+92-300-1234567',
-            instructions='''Step 1: Transfer the exact amount to the account below.
-Step 2: Take a screenshot of the payment confirmation.
-Step 3: Upload the screenshot in the order payment section.
-Step 4: Wait for admin verification (usually within 24 hours).
+            easypaisa_number='+92-321-1234567',
+            jazzcash_number='+92-300-1234567',
+            instructions='''Step 1: Choose your preferred payment method at checkout (Bank Transfer, Easypaisa, or JazzCash).
+Step 2: Transfer the exact amount to the account/number shown for that method.
+Step 3: Take a screenshot of the payment confirmation.
+Step 4: Upload the screenshot in the order payment section.
+Step 5: Wait for admin verification (usually within 24 hours).
 
 Bank Transfer:
 Bank: HBL
 Account Title: GameZone Hub Store
 Account Number: 1234-5678-9012-3456
 IBAN: PK09SCBL0000001234567890
+
+Easypaisa:
+Number: +92-321-1234567
 
 JazzCash:
 Number: +92-300-1234567'''
@@ -837,7 +843,7 @@ Number: +92-300-1234567'''
             user_id=customer1.id,
             subtotal=449.99,
             total=449.99,
-            payment_method='online',
+            payment_method='bank_transfer',
             payment_status='WAITING_FOR_VERIFICATION',
             status='PENDING'
         )
@@ -890,7 +896,7 @@ Number: +92-300-1234567'''
             user_id=customer3.id,
             subtotal=119.99,
             total=119.99,
-            payment_method='online',
+            payment_method='jazzcash',
             payment_status='VERIFIED',
             status='DELIVERED'
         )

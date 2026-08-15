@@ -77,6 +77,10 @@ def create_app(config_name='default'):
     @app.context_processor
     def inject_globals():
         from app.models import Category, Cart, Wishlist, Notification
+        from app.utils.helpers import (
+            get_payment_method_label, is_online_payment,
+            PAYMENT_METHOD_LABELS, PAYMENT_METHOD_ICONS, ONLINE_PAYMENT_METHODS
+        )
         from flask_login import current_user
         categories = Category.query.filter_by(is_active=True).all()
         cart_count = 0
@@ -92,7 +96,12 @@ def create_app(config_name='default'):
             site_categories=categories,
             cart_count=cart_count,
             wishlist_count=wishlist_count,
-            notification_count=notification_count
+            notification_count=notification_count,
+            get_payment_method_label=get_payment_method_label,
+            is_online_payment=is_online_payment,
+            payment_method_labels=PAYMENT_METHOD_LABELS,
+            payment_method_icons=PAYMENT_METHOD_ICONS,
+            online_payment_methods=ONLINE_PAYMENT_METHODS
         )
 
     return app

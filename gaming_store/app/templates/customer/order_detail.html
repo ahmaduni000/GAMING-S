@@ -58,18 +58,18 @@
                         <div class="card glass-card mb-4">
                             <div class="card-header"><h6 class="mb-0">Payment</h6></div>
                             <div class="card-body">
-                                <p>Method: {{ order.payment_method|upper }}</p>
+                                <p>Method: {{ get_payment_method_label(order.payment_method) }}</p>
                                 <p>Status: <span class="badge bg-{{ 'success' if order.payment_status == 'VERIFIED' else 'warning' }}">{{ order.payment_status }}</span></p>
                             </div>
                         </div>
-                        {% if order.payment_method == 'online' and order.payment_status in ['PENDING', 'REJECTED'] %}
+                        {% if is_online_payment(order.payment_method) and order.payment_status in ['PENDING', 'REJECTED'] %}
                         <div class="card glass-card">
                             <div class="card-header"><h6 class="mb-0">Upload Payment Proof</h6></div>
                             <div class="card-body">
                                 <form action="{{ url_for('customer.upload_payment', order_id=order.id) }}" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <div class="mb-2"><input type="text" name="sender_name" class="form-control form-control-sm" placeholder="Sender Name"></div>
-                                    <div class="mb-2"><input type="text" name="sender_account" class="form-control form-control-sm" placeholder="Account Number"></div>
+                                    <div class="mb-2"><input type="text" name="sender_account" class="form-control form-control-sm" placeholder="Account Number / Mobile Number"></div>
                                     <div class="mb-2"><input type="text" name="transaction_ref" class="form-control form-control-sm" placeholder="Transaction Reference"></div>
                                     <div class="mb-2"><input type="file" name="screenshot" class="form-control form-control-sm" required></div>
                                     <button type="submit" class="btn btn-primary-glow btn-sm w-100">Submit Payment</button>

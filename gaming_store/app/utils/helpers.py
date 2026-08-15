@@ -3,6 +3,42 @@ import string
 from datetime import datetime
 
 
+# Payment method identifiers
+PAYMENT_COD = 'cod'
+PAYMENT_BANK = 'bank_transfer'
+PAYMENT_EASYPAISA = 'easypaisa'
+PAYMENT_JAZZCASH = 'jazzcash'
+
+# Online payment methods (require proof upload + admin verification)
+ONLINE_PAYMENT_METHODS = [PAYMENT_BANK, PAYMENT_EASYPAISA, PAYMENT_JAZZCASH]
+
+# Human-readable labels for each payment method
+PAYMENT_METHOD_LABELS = {
+    PAYMENT_COD: 'Cash on Delivery',
+    PAYMENT_BANK: 'Bank Transfer',
+    PAYMENT_EASYPAISA: 'Easypaisa',
+    PAYMENT_JAZZCASH: 'JazzCash',
+}
+
+# Icon class (Font Awesome) for each payment method
+PAYMENT_METHOD_ICONS = {
+    PAYMENT_COD: 'fa-money-bill-wave',
+    PAYMENT_BANK: 'fa-university',
+    PAYMENT_EASYPAISA: 'fa-mobile-alt',
+    PAYMENT_JAZZCASH: 'fa-mobile-screen-button',
+}
+
+
+def get_payment_method_label(method):
+    """Return a human-readable label for a payment method code."""
+    return PAYMENT_METHOD_LABELS.get(method, (method or '').replace('_', ' ').title())
+
+
+def is_online_payment(method):
+    """Return True if the method is an online (transfer/wallet) payment."""
+    return method in ONLINE_PAYMENT_METHODS
+
+
 def generate_order_number():
     """Generate a unique order number."""
     prefix = 'GS'

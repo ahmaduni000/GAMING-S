@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from app import db
-from app.models.order import Order, OrderItem, Payment, PaymentProof
-from app.models.service import ServiceBooking
+from app.models.order import Order, OrderItem, Payment, PaymentProof, OrderStatusHistory
+from app.models.service import ServiceBooking, AppointmentStatusHistory
 from app.models.cart import Wishlist, WishlistItem
 from app.models.review import Review
 from app.models.communication import Notification
@@ -57,8 +57,6 @@ def order_detail(order_id):
     if order.user_id != current_user.id:
         flash('Unauthorized.', 'danger')
         return redirect(url_for('customer.orders'))
-    status_history = order.status_history.order_by(OrderStatusHistory=order.status_history.order().first() if False else None)
-    from app.models.order import OrderStatusHistory
     status_history = OrderStatusHistory.query.filter_by(order_id=order.id).order_by(OrderStatusHistory.created_at).all()
     return render_template('customer/order_detail.html', order=order,
                          status_history=status_history,
@@ -77,10 +75,12 @@ def upload_payment(order_id):
         flash('Please upload a payment screenshot.', 'danger')
         return redirect(url_for('customer.order_detail', order_id=order_id))
     image_path = save_upload(screenshot, 'payments')
+    # Use the order's chosen payment method (bank_transfer / easypaisa / jazzcash)
+    method = order.payment_method if order.payment_method in ('bank_transfer', 'easypaisa', 'jazzcash') else 'bank_transfer'
     payment = Payment(
         order_id=order.id,
         amount=order.total,
-        method='online',
+        method=method,
         status='WAITING_FOR_VERIFICATION'
     )
     db.session.add(payment)
@@ -116,7 +116,6 @@ def appointments():
 @customer_bp.route('/appointments/<int:appointment_id>')
 @login_required
 def appointment_detail(appointment_id):
-    from app.models.service import AppointmentStatusHistory
     booking = ServiceBooking.query.get_or_404(appointment_id)
     if booking.user_id != current_user.id:
         flash('Unauthorized.', 'danger')
