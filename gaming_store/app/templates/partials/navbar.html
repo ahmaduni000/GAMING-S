@@ -69,19 +69,48 @@
 <div style="height:70px;"></div>
 
 <script>
-document.getElementById('logo-image').addEventListener('click', function() {
-    if (this.classList.contains('zoomed')) {
-        this.classList.remove('zoomed');
-    } else {
-        this.classList.add('zoomed');
-    }
+document.getElementById('logo-image').addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var overlay = document.getElementById('logo-zoom-overlay');
+    var big = document.getElementById('logo-zoom-img');
+    big.src = this.src;
+    overlay.classList.add('show');
+});
+document.getElementById('logo-zoom-overlay').addEventListener('click', function() {
+    this.classList.remove('show');
 });
 </script>
 
 <style>
-.zoomed {
-    transform: scale(3);
+#logo-zoom-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    cursor: zoom-out;
+}
+#logo-zoom-overlay.show {
+    display: flex;
+}
+#logo-zoom-img {
+    max-width: 80vw;
+    max-height: 80vh;
     width: auto;
     height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: logoZoomIn 0.25s ease;
+}
+@keyframes logoZoomIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 </style>
+<div id="logo-zoom-overlay">
+    <img id="logo-zoom-img" src="" alt="GameZone Logo Zoomed">
+</div>
