@@ -63,7 +63,7 @@
                 {% endif %}
                 <div class="d-flex gap-3 mb-4">
                     {% if product.in_stock %}
-                    <form action="{{ url_for('products.add_to_cart') }}" method="POST" class="d-flex gap-2 flex-grow-1">
+                    <form action="{{ url_for('products.add_to_cart', product_id=product.id) }}" method="POST" class="d-flex gap-2 flex-grow-1">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="product_id" value="{{ product.id }}">
                         <div class="input-group" style="width:130px;">
