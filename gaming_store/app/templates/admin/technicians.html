@@ -34,9 +34,13 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
+                                            {% if tech.user.profile_image and tech.user.profile_image != 'default.png' %}
+                                            <img src="{{ url_for('static', filename='uploads/profiles/' + tech.user.profile_image) }}" alt="{{ tech.user.full_name }}" class="rounded-circle me-2" style="width:35px;height:35px;object-fit:cover;">
+                                            {% else %}
                                             <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width:35px;height:35px;">
                                                 <i class="fas fa-user text-primary small"></i>
                                             </div>
+                                            {% endif %}
                                             <div>
                                                 <strong>{{ tech.user.full_name }}</strong>
                                                 <br><small class="text-muted">{{ tech.user.email }}</small>
