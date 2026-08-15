@@ -69,43 +69,56 @@
 <div style="height:70px;"></div>
 
 <script>
-function openLogoZoom(src) {
+document.addEventListener('DOMContentLoaded', function() {
+    function openLogoZoom(src) {
+        var overlay = document.getElementById('logo-zoom-overlay');
+        var big = document.getElementById('logo-zoom-img');
+        if (!overlay || !big) return;
+        big.src = src;
+        overlay.classList.add('show');
+    }
+
+    var logoImage = document.getElementById('logo-image');
+    if (logoImage) {
+        logoImage.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openLogoZoom(this.src);
+        });
+    }
+
     var overlay = document.getElementById('logo-zoom-overlay');
-    var big = document.getElementById('logo-zoom-img');
-    big.src = src;
-    overlay.classList.add('show');
-}
-
-document.getElementById('logo-image').addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    openLogoZoom(this.src);
-});
-
-document.getElementById('logo-zoom-overlay').addEventListener('click', function(e) {
-    // Close when clicking the dark backdrop or the X button, but not the image
-    if (e.target === this || e.target.id === 'logo-zoom-close') {
-        this.classList.remove('show');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            // Close when clicking the dark backdrop or the X button, but not the image
+            if (e.target === this || e.target.id === 'logo-zoom-close') {
+                this.classList.remove('show');
+            }
+        });
     }
-});
 
-document.getElementById('logo-zoom-close').addEventListener('click', function(e) {
-    e.stopPropagation();
-    document.getElementById('logo-zoom-overlay').classList.remove('show');
-});
-
-// Make any "Back" arrow button open the logo zoom instead of navigating
-document.addEventListener('click', function(e) {
-    var backBtn = e.target.closest('a.btn[href]:not([href=""]), a.btn-outline-secondary[href]');
-    if (!backBtn) return;
-    var icon = backBtn.querySelector('i.fa-arrow-left, i.fas.fa-arrow-left');
-    if (!icon) return;
-    // Only treat as a "Back" button if it contains an arrow-left icon
-    if (backBtn.querySelector('.fa-arrow-left')) {
-        e.preventDefault();
-        e.stopPropagation();
-        openLogoZoom("{{ url_for('static', filename='GAME ZONE LOGO.WEB.webp') }}");
+    var closeBtn = document.getElementById('logo-zoom-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var ov = document.getElementById('logo-zoom-overlay');
+            if (ov) ov.classList.remove('show');
+        });
     }
+
+    // Make any "Back" arrow button open the logo zoom instead of navigating
+    document.addEventListener('click', function(e) {
+        var backBtn = e.target.closest('a.btn[href]:not([href=""]), a.btn-outline-secondary[href]');
+        if (!backBtn) return;
+        var icon = backBtn.querySelector('i.fa-arrow-left, i.fas.fa-arrow-left');
+        if (!icon) return;
+        // Only treat as a "Back" button if it contains an arrow-left icon
+        if (backBtn.querySelector('.fa-arrow-left')) {
+            e.preventDefault();
+            e.stopPropagation();
+            openLogoZoom("{{ url_for('static', filename='GAME ZONE LOGO.WEB.webp') }}");
+        }
+    });
 });
 </script>
 
