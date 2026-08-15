@@ -78,5 +78,10 @@
 </li>
 </ul>
 <style>
+/* Keep the global footer clear of the fixed admin sidebar so its left text isn't hidden */
+.site-footer { margin-left: 250px; }
+@media (max-width: 991px) {
+  .site-footer { margin-left: 0; }
+}
 </style>
 </div>
