@@ -225,7 +225,7 @@
                                     <a href="{{ url_for('admin.service_form') }}" class="text-decoration-none">
                                         <div class="text-center">
                                             {% if service.image %}
-                                            <img src="{{ service.image }}" alt="{{ service.name }}" class="rounded mb-1" style="width:100%;height:70px;object-fit:cover;">
+                                            <img src="/static/{{ service.image }}" alt="{{ service.name }}" class="rounded mb-1" style="width:100%;height:70px;object-fit:cover;">
                                             {% else %}
                                             <div class="bg-light rounded mb-1 d-flex align-items-center justify-content-center" style="width:100%;height:70px;">
                                                 <i class="fas fa-cog text-muted"></i>

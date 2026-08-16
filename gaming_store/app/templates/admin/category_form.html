@@ -54,6 +54,11 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Image</label>
+                                    {% if category and category.image %}
+                                    <div class="mb-2">
+                                        <img src="/static/{{ category.image }}" alt="{{ category.name }}" class="rounded" style="width:80px;height:80px;object-fit:cover;">
+                                    </div>
+                                    {% endif %}
                                     <input type="file" name="image" class="form-control" accept="image/*">
                                 </div>
                             </div>
