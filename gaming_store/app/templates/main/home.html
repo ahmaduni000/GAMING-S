@@ -40,6 +40,18 @@
     </div>
 </section>
 
+<!-- Promo Banner -->
+<section class="section-padding pt-0">
+    <div class="container">
+        <div class="banner-display text-center">
+            <img src="{{ url_for('static', filename='BANNER GAME ZONE.WEB.webp') }}"
+                 alt="GameZone Promo Banner" id="home-banner"
+                 class="img-fluid rounded shadow w-100"
+                 style="cursor: zoom-in; object-fit: contain; max-height: 420px;">
+        </div>
+    </div>
+</section>
+
 <!-- Categories -->
 <section class="section-padding">
     <div class="container">
@@ -202,4 +214,19 @@
     </div>
 </section>
 
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var banner = document.getElementById('home-banner');
+    if (banner && window.openLogoZoom) {
+        banner.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.openLogoZoom(this.src);
+        });
+    }
+});
+</script>
 {% endblock %}

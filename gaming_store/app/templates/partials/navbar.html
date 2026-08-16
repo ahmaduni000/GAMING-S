@@ -70,7 +70,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function openLogoZoom(src) {
+    window.openLogoZoom = function(src) {
         var overlay = document.getElementById('logo-zoom-overlay');
         var big = document.getElementById('logo-zoom-img');
         if (!overlay || !big) return;
