@@ -44,6 +44,8 @@ def dashboard():
     recent_services = Service.query.order_by(Service.created_at.desc()).limit(6).all()
     recent_technicians = Technician.query.order_by(Technician.created_at.desc()).limit(6).all()
 
+    recent_categories = Category.query.order_by(Category.created_at.desc()).limit(6).all()
+
 
     monthly_revenue = []
     monthly_labels = []
@@ -67,6 +69,7 @@ def dashboard():
                          recent_orders=recent_orders, recent_messages=recent_messages,
                          recent_products=recent_products, recent_services=recent_services,
                          recent_technicians=recent_technicians,
+                          recent_categories=recent_categories,
                          monthly_revenue=monthly_revenue, monthly_labels=monthly_labels)
 
 
