@@ -18,7 +18,7 @@ import glob
 
 HOME = '/home/gamingstore7683'
 
-# 1) Auto-detect the project root (the folder that contains run.py)
+# 1) Auto-detect the project root (the folder that contains run.py AND app/__init__.py)
 CANDIDATE_ROOTS = [
     os.path.join(HOME, 'GAMING-S', 'gaming_store'),
     os.path.join(HOME, 'GAMING SW', 'gaming_store'),
@@ -30,13 +30,17 @@ CANDIDATE_ROOTS = [
 ]
 PROJECT_ROOT = None
 for cand in CANDIDATE_ROOTS:
-    if os.path.exists(os.path.join(cand, 'run.py')):
+    if os.path.isfile(os.path.join(cand, 'run.py')) and os.path.isfile(os.path.join(cand, 'app', '__init__.py')):
         PROJECT_ROOT = cand
         break
-# Fallback: search one level deep under HOME for a folder containing run.py
+
+# Fallback: search the whole HOME tree for the real project root, regardless of
+# the folder name you uploaded it to. Skips hidden / virtualenv folders for speed.
 if PROJECT_ROOT is None:
     for root, dirs, files in os.walk(HOME):
-        if 'run.py' in files and 'gaming_store' in root.split(os.sep):
+        if any(seg.startswith('.') for seg in root.split(os.sep)[1:]):
+            continue
+        if 'run.py' in files and os.path.isfile(os.path.join(root, 'app', '__init__.py')):
             PROJECT_ROOT = root
             break
 
