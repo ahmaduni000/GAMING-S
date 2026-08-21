@@ -5,8 +5,9 @@ PASTE THIS ENTIRE CONTENT into your PythonAnywhere WSGI file at:
     /var/www/gamingstore7683_pythonanywhere_com_wsgi.py
 
 It auto-detects your project folder and virtualenv, puts them on sys.path,
-and loads your .env so that `flask` (and all other dependencies) are
-importable. This fixes the "ModuleNotFoundError: No module named 'flask'" error.
+loads your .env, creates DB tables if missing (SQLite safe), and exposes the
+WSGI application. This fixes both "ModuleNotFoundError: No module named 'flask'"
+and the "502-backend" worker-crash errors.
 
 You do NOT need to edit any paths below — it searches common locations.
 """
@@ -86,5 +87,18 @@ try:
 except Exception:
     pass
 
-# 4) Expose the WSGI application
-from run import app as application  # noqa
+# 4) Expose the WSGI application (with a safe fallback import)
+try:
+    from run import app as application  # noqa
+except Exception:
+    from app import create_app
+    application = create_app('default')  # noqa
+
+# 5) Create tables if they don't exist yet (safe for SQLite; no-op if present).
+#    This avoids "no such table" 500s on a fresh deploy.
+try:
+    with application.app_context():
+        from app import db
+        db.create_all()
+except Exception:
+    pass
