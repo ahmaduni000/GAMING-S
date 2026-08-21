@@ -53,6 +53,7 @@ if PROJECT_ROOT not in sys.path:
 
 # 2) Auto-detect the virtualenv and add its site-packages to sys.path
 CANDIDATE_VENVS = [
+    os.path.join(HOME, '.virtualenvs', 'venv'),
     os.path.join(HOME, '.virtualenvs', 'gamingstore'),
     os.path.join(HOME, 'venv'),
     os.path.join(HOME, '.venv'),
