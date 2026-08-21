@@ -72,6 +72,21 @@
 </a>
 </li>
 <li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'homepage' in request.endpoint|default('') }}" href="{{ url_for('admin.homepage_content') }}">
+<i class="fas fa-home me-2"></i>Homepage Content
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'advertisement' in request.endpoint|default('') }}" href="{{ url_for('admin.advertisements') }}">
+<i class="fas fa-ad me-2"></i>Advertisements
+</a>
+</li>
+<li class="nav-item mb-1">
+<a class="nav-link text-white {{ 'active bg-primary bg-opacity-25' if 'account' in request.endpoint|default('') }}" href="{{ url_for('admin.accounts') }}">
+<i class="fas fa-user-shield me-2"></i>Accounts
+</a>
+</li>
+<li class="nav-item mb-1">
 <a class="nav-link text-white" href="{{ url_for('admin.payment_settings') }}">
 <i class="fas fa-sliders-h me-2"></i>Payment Settings
 </a>

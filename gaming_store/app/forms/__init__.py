@@ -235,3 +235,64 @@ class TechnicianForm(FlaskForm):
     bio = TextAreaField('Bio', validators=[Optional()])
     hourly_rate = FloatField('Hourly Rate', validators=[Optional(), NumberRange(min=0)])
     is_available = BooleanField('Available', default=True)
+
+
+class HomepageContentForm(FlaskForm):
+    hero_badge = StringField('Hero Badge Text', validators=[Optional(), Length(max=100)])
+    hero_title = StringField('Hero Title', validators=[Optional(), Length(max=300)])
+    hero_subtitle = TextAreaField('Hero Subtitle', validators=[Optional()])
+    hero_button1_text = StringField('Primary Button Text', validators=[Optional(), Length(max=50)])
+    hero_button1_url = StringField('Primary Button URL', validators=[Optional(), Length(max=200)])
+    hero_button2_text = StringField('Secondary Button Text', validators=[Optional(), Length(max=50)])
+    hero_button2_url = StringField('Secondary Button URL', validators=[Optional(), Length(max=200)])
+    categories_title = StringField('Categories Section Title', validators=[Optional(), Length(max=200)])
+    categories_subtitle = TextAreaField('Categories Section Subtitle', validators=[Optional()])
+    featured_title = StringField('Featured Products Title', validators=[Optional(), Length(max=200)])
+    discount_title = StringField('Discounted Products Title', validators=[Optional(), Length(max=200)])
+    services_title = StringField('Services Section Title', validators=[Optional(), Length(max=200)])
+    services_subtitle = TextAreaField('Services Section Subtitle', validators=[Optional()])
+    cta_title = StringField('CTA Title', validators=[Optional(), Length(max=200)])
+    cta_subtitle = TextAreaField('CTA Subtitle', validators=[Optional()])
+    cta_button1_text = StringField('CTA Button 1 Text', validators=[Optional(), Length(max=50)])
+    cta_button1_url = StringField('CTA Button 1 URL', validators=[Optional(), Length(max=200)])
+    cta_button2_text = StringField('CTA Button 2 Text', validators=[Optional(), Length(max=50)])
+    cta_button2_url = StringField('CTA Button 2 URL', validators=[Optional(), Length(max=200)])
+    show_categories = BooleanField('Show Categories Section', default=True)
+    show_featured = BooleanField('Show Featured Products', default=True)
+    show_discount = BooleanField('Show Discounted Products', default=True)
+    show_services = BooleanField('Show Services Section', default=True)
+
+
+class AdvertisementForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(2, 200)])
+    content = TextAreaField('Content', validators=[Optional()])
+    image = FileField('Advertisement Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only!')
+    ])
+    link_url = StringField('Link URL', validators=[Optional(), Length(max=500)])
+    position = SelectField('Display Position', choices=[
+        ('sidebar', 'Sidebar'), ('homepage', 'Homepage'),
+        ('footer', 'Footer'), ('popup', 'Popup')
+    ])
+    is_active = BooleanField('Active', default=True)
+
+
+class AccountForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(3, 80)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    first_name = StringField('First Name', validators=[DataRequired(), Length(2, 50)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(2, 50)])
+    phone = StringField('Phone', validators=[Optional(), Length(10, 20)])
+    role = SelectField('Role', choices=[
+        ('customer', 'Customer'), ('staff', 'Staff'),
+        ('technician', 'Technician'), ('admin', 'Admin')
+    ])
+    is_active = BooleanField('Active', default=True)
+    reset_password = BooleanField('Reset password to default (password123)', default=False)
+
+
+class ContactSettingsForm(FlaskForm):
+    address = TextAreaField("Store Address", validators=[Optional(), Length(max=300)])
+    phone = StringField("Phone Number", validators=[Optional(), Length(max=50)])
+    email = StringField("Email Address", validators=[Optional(), Email(), Length(max=120)])
+    business_hours = StringField("Business Hours", validators=[Optional(), Length(max=120)])

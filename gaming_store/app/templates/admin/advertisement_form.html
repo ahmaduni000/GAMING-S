@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if ad else 'Add' }} Advertisement - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-ad me-2"></i>{{ 'Edit' if ad else 'Add' }} Advertisement</h2>
+                <a href="{{ url_for('admin.advertisements') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Advertisements
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title</label>
+                                    {{ form.title(class="form-control", placeholder="Advertisement title") }}
+                                    {% for error in form.title.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Position</label>
+                                    {{ form.position(class="form-select") }}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Content / Description</label>
+                                    {{ form.content(class="form-control", rows="3", placeholder="Advertisement content...") }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Link URL</label>
+                                    {{ form.link_url(class="form-control", placeholder="/products or https://...") }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Advertisement Image</label>
+                                    <input type="file" name="image" class="form-control" accept="image/*">
+                                </div>
+                            </div>
+
+                            {% if ad and ad.image_url %}
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Current Image</label>
+                                <img src="{{ ad.image_url }}" class="rounded" style="max-height:100px;" alt="">
+                            </div>
+                            {% endif %}
+
+                            <div class="col-12">
+                                <hr>
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_active(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Active</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-1"></i>{{ 'Update' if ad else 'Create' }} Advertisement
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

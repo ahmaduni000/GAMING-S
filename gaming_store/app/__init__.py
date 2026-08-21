@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -6,7 +7,23 @@ from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
-from config import config
+from sqlalchemy.pool import NullPool
+
+# Ensure the project root (where config.py lives) is importable regardless of
+# how the WSGI file sets up sys.path (e.g. on PythonAnywhere).
+_project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
+try:
+    from config import config
+except ImportError:
+    # Fallback if config.py is not on the path for some reason
+    config = {
+        'development': type('C', (), {}),
+        'production': type('C', (), {}),
+        'default': type('C', (), {}),
+    }
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -23,6 +40,27 @@ login_manager.login_message = 'Please log in to access this page.'
 def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+
+    # Configure SQLAlchemy engine for Neon serverless PostgreSQL
+    # Disable pooling for serverless - each request gets fresh connection
+    database_url = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+    if database_url.startswith('postgresql://'):
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'poolclass': NullPool,
+            'connect_args': {
+                'keepalives': 1,
+                'keepalives_idle': 30,
+                'keepalives_interval': 10,
+                'keepalives_count': 5,
+                'connect_timeout': 10,
+            }
+        }
+    else:
+        # SQLite or other - use default pooling
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'pool_pre_ping': True,
+            'pool_recycle': 300,
+        }
 
     # Ensure upload directories exist
     upload_dirs = [
@@ -77,6 +115,7 @@ def create_app(config_name='default'):
     @app.context_processor
     def inject_globals():
         from app.models import Category, Cart, Wishlist, Notification
+        from app.models.settings import SiteSettings
         from app.utils.helpers import (
             get_payment_method_label, is_online_payment,
             PAYMENT_METHOD_LABELS, PAYMENT_METHOD_ICONS, ONLINE_PAYMENT_METHODS
@@ -101,7 +140,11 @@ def create_app(config_name='default'):
             is_online_payment=is_online_payment,
             payment_method_labels=PAYMENT_METHOD_LABELS,
             payment_method_icons=PAYMENT_METHOD_ICONS,
-            online_payment_methods=ONLINE_PAYMENT_METHODS
+            online_payment_methods=ONLINE_PAYMENT_METHODS,
+            contact_address=SiteSettings.get('contact_address', '123 Gaming Street, Tech City, Pakistan'),
+            contact_phone=SiteSettings.get('contact_phone', '+92 300 1234567'),
+            contact_email=SiteSettings.get('contact_email', 'info@gamezone.com'),
+            contact_hours=SiteSettings.get('contact_hours', 'Mon-Sat: 9:00 AM - 9:00 PM')
         )
 
     return app

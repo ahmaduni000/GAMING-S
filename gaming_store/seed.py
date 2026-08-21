@@ -24,13 +24,13 @@ from app.utils.helpers import slugify
 def seed_database():
     app = create_app()
     with app.app_context():
-        print("ðŸ—‘ï¸  Dropping all tables...")
+        print("Dropping all tables...")
         db.drop_all()
-        print("ðŸ“¦ Creating all tables...")
+        print("Creating all tables...")
         db.create_all()
 
         # === ROLES ===
-        print("ðŸ‘¤ Creating roles...")
+        print("Creating roles...")
         admin_role = Role(name='admin', description='Administrator')
         staff_role = Role(name='staff', description='Staff Member')
         tech_role = Role(name='technician', description='Technician')

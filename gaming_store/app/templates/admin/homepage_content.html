@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Homepage Content - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-home me-2"></i>Homepage Content</h2>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <h5 class="fw-bold mb-3"><i class="fas fa-star me-2"></i>Main Hero Banner</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hero Badge Text</label>
+                                    {{ form.hero_badge(class="form-control", placeholder="e.g. Welcome to GameZone") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hero Title</label>
+                                    {{ form.hero_title(class="form-control", placeholder="Main headline") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hero Subtitle</label>
+                                    {{ form.hero_subtitle(class="form-control", rows="2", placeholder="Subheading text...") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Primary Button Text</label>
+                                    {{ form.hero_button1_text(class="form-control", placeholder="Shop Now") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Primary Button URL</label>
+                                    {{ form.hero_button1_url(class="form-control", placeholder="/products") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Secondary Button Text</label>
+                                    {{ form.hero_button2_text(class="form-control", placeholder="Our Services") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Secondary Button URL</label>
+                                    {{ form.hero_button2_url(class="form-control", placeholder="/services") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3"><i class="fas fa-cube me-2"></i>Section Titles</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Categories Title</label>
+                                    {{ form.categories_title(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Categories Subtitle</label>
+                                    {{ form.categories_subtitle(class="form-control", rows="2") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Featured Products Title</label>
+                                    {{ form.featured_title(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Discounted Products Title</label>
+                                    {{ form.discount_title(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Services Title</label>
+                                    {{ form.services_title(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Services Subtitle</label>
+                                    {{ form.services_subtitle(class="form-control", rows="2") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3"><i class="fas fa-bolt me-2"></i>Call to Action Section</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">CTA Title</label>
+                                    {{ form.cta_title(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">CTA Subtitle</label>
+                                    {{ form.cta_subtitle(class="form-control", rows="2") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">CTA Button 1 Text</label>
+                                    {{ form.cta_button1_text(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">CTA Button 1 URL</label>
+                                    {{ form.cta_button1_url(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">CTA Button 2 Text</label>
+                                    {{ form.cta_button2_text(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">CTA Button 2 URL</label>
+                                    {{ form.cta_button2_url(class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3"><i class="fas fa-eye me-2"></i>Section Visibility</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    {{ form.show_categories(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Show Categories</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    {{ form.show_featured(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Show Featured Products</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    {{ form.show_discount(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Show Discounted Products</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    {{ form.show_services(class="form-check-input") }}
+                                    <label class="form-check-label fw-bold">Show Services</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-1"></i>Save Homepage Content
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

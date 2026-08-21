@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request
 from app.models import Product, Category, Service, Technician, ContactMessage, Banner, Announcement
+from app.models.communication import HomepageContent, Advertisement
 from app.models.user import User
 from app.models.order import Order
 from app.forms import ContactForm
@@ -25,6 +26,8 @@ def home():
     banners = Banner.query.filter_by(is_active=True, position='hero').order_by(Banner.sort_order).all()
     promo_banners = Banner.query.filter_by(is_active=True, position='promo').order_by(Banner.sort_order).all()
     announcements = Announcement.query.filter_by(is_active=True).order_by(Announcement.is_pinned.desc()).limit(3).all()
+    homepage_content = HomepageContent.get_settings()
+    advertisements = Advertisement.query.filter_by(is_active=True).all()
 
     stats = {
         'total_users': User.query.count(),
@@ -44,7 +47,9 @@ def home():
                          banners=banners,
                          promo_banners=promo_banners,
                          announcements=announcements,
-                         stats=stats)
+                         stats=stats,
+                         homepage_content=homepage_content,
+                         advertisements=advertisements)
 
 
 @main_bp.route('/about')

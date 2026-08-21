@@ -1,16 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_required
 from app import db
-from app.models.user import User, Role, Technician, ActivityLog
+from app.models.user import User, Role, Technician, ActivityLog, Permission
 from app.models.product import Product, Category, ProductImage, ProductSpecification, Inventory
 from app.models.order import Order, OrderItem, Payment, PaymentProof, OrderStatusHistory, BillingDetail
 from app.models.service import Service, ServiceBooking, AppointmentStatusHistory
 from app.models.review import Review
-from app.models.communication import ContactMessage, Announcement, Notification, Banner
+from app.models.communication import ContactMessage, Announcement, Notification, Banner, Advertisement, HomepageContent
 from app.models.settings import SiteSettings, PaymentSettings
 from app.forms import (CategoryForm, ProductForm, ServiceForm, BannerForm,
                        AnnouncementForm, PaymentSettingsForm, UserForm, TechnicianForm,
-                       PaymentVerificationForm, OrderStatusForm, ServiceStatusForm)
+                       PaymentVerificationForm, OrderStatusForm, ServiceStatusForm,
+                       HomepageContentForm, AdvertisementForm, AccountForm,
+                       ContactSettingsForm)
 from app.utils.decorators import admin_required
 from app.utils.file_upload import save_upload, delete_upload
 from app.utils.helpers import get_status_color, slugify
@@ -49,14 +51,28 @@ def dashboard():
 
     monthly_revenue = []
     monthly_labels = []
+    monthly_orders = []
+    now = datetime.utcnow()
     for i in range(5, -1, -1):
-        month_start = datetime.utcnow().replace(day=1) - timedelta(days=30*i)
-        month_end = month_start + timedelta(days=30)
+        # First day of the target month (i months ago)
+        month_index = now.month - 1 - i
+        year = now.year + month_index // 12
+        month = month_index % 12 + 1
+        month_start = datetime(year, month, 1)
+        if month == 12:
+            month_end = datetime(year + 1, 1, 1)
+        else:
+            month_end = datetime(year, month + 1, 1)
         rev = db.session.query(func.sum(Order.total)).filter(
             Order.created_at >= month_start, Order.created_at < month_end,
             Order.status == 'DELIVERED'
         ).scalar() or 0
+        order_count = Order.query.filter(
+            Order.created_at >= month_start, Order.created_at < month_end,
+            Order.status == 'DELIVERED'
+        ).count()
         monthly_revenue.append(float(rev))
+        monthly_orders.append(order_count)
         monthly_labels.append(month_start.strftime('%b %Y'))
 
     return render_template('admin/dashboard.html',
@@ -70,7 +86,8 @@ def dashboard():
                          recent_products=recent_products, recent_services=recent_services,
                          recent_technicians=recent_technicians,
                           recent_categories=recent_categories,
-                         monthly_revenue=monthly_revenue, monthly_labels=monthly_labels)
+                          monthly_revenue=monthly_revenue, monthly_labels=monthly_labels,
+                          monthly_orders=monthly_orders)
 
 
 # --- CUSTOMERS ---
@@ -695,3 +712,149 @@ def payment_settings():
         flash('Payment settings saved!', 'success')
         return redirect(url_for('admin.payment_settings'))
     return render_template('admin/payment_settings.html', form=form)
+
+
+# --- HOMEPAGE CONTENT ---
+@admin_bp.route('/homepage', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def homepage_content():
+    settings = HomepageContent.get_settings()
+    form = HomepageContentForm(obj=settings)
+    if form.validate_on_submit():
+        form.populate_obj(settings)
+        db.session.commit()
+        flash('Homepage content updated!', 'success')
+        return redirect(url_for('admin.homepage_content'))
+    return render_template('admin/homepage_content.html', form=form, settings=settings)
+
+
+# --- CONTACT SETTINGS ---
+@admin_bp.route('/contact-settings', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def contact_settings():
+    form = ContactSettingsForm()
+    if form.validate_on_submit():
+        SiteSettings.set('contact_address', form.address.data or '', 'Store physical address')
+        SiteSettings.set('contact_phone', form.phone.data or '', 'Store contact phone number')
+        SiteSettings.set('contact_email', form.email.data or '', 'Store contact email')
+        SiteSettings.set('contact_hours', form.business_hours.data or '', 'Store business hours')
+        flash('Contact information updated!', 'success')
+        return redirect(url_for('admin.contact_settings'))
+    form.address.data = SiteSettings.get('contact_address', '123 Gaming Street, Tech City, Pakistan')
+    form.phone.data = SiteSettings.get('contact_phone', '+92 300 1234567')
+    form.email.data = SiteSettings.get('contact_email', 'info@gamezone.com')
+    form.business_hours.data = SiteSettings.get('contact_hours', 'Mon-Sat: 9:00 AM - 9:00 PM')
+    return render_template('admin/contact_settings.html', form=form)
+
+
+# --- ADVERTISEMENTS ---
+@admin_bp.route('/advertisements')
+@login_required
+@admin_required
+def advertisements():
+    ads = Advertisement.query.order_by(Advertisement.created_at.desc()).all()
+    return render_template('admin/advertisements.html', ads=ads)
+
+
+@admin_bp.route('/advertisements/add', methods=['GET', 'POST'])
+@admin_bp.route('/advertisements/<int:ad_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def advertisement_form(ad_id=None):
+    ad = Advertisement.query.get(ad_id) if ad_id else None
+    form = AdvertisementForm(obj=ad)
+    if form.validate_on_submit():
+        if not ad:
+            ad = Advertisement()
+            db.session.add(ad)
+        ad.title = form.title.data
+        ad.content = form.content.data
+        ad.link_url = form.link_url.data
+        ad.position = form.position.data
+        ad.is_active = form.is_active.data
+        if form.image.data:
+            path = save_upload(form.image.data, 'ads')
+            if path:
+                if ad.image_url:
+                    delete_upload(ad.image_url)
+                ad.image_url = path
+        db.session.commit()
+        flash('Advertisement saved!', 'success')
+        return redirect(url_for('admin.advertisements'))
+    return render_template('admin/advertisement_form.html', form=form, ad=ad)
+
+
+@admin_bp.route('/advertisements/<int:ad_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def advertisement_delete(ad_id):
+    ad = Advertisement.query.get_or_404(ad_id)
+    if ad.image_url:
+        delete_upload(ad.image_url)
+    db.session.delete(ad)
+    db.session.commit()
+    flash('Advertisement deleted.', 'success')
+    return redirect(url_for('admin.advertisements'))
+
+
+# --- ACCOUNTS (staff / admin management) ---
+@admin_bp.route('/accounts')
+@login_required
+@admin_required
+def accounts():
+    users = User.query.join(User.roles).filter(
+        Role.name.in_(['staff', 'admin', 'technician'])
+    ).order_by(User.created_at.desc()).all()
+    return render_template('admin/accounts.html', accounts=users)
+
+
+@admin_bp.route('/accounts/<int:user_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def account_edit(user_id):
+    user = User.query.get_or_404(user_id)
+    form = AccountForm(obj=user)
+    if form.validate_on_submit():
+        if user.id == current_user.id and not form.is_active.data:
+            flash('You cannot deactivate your own account.', 'danger')
+            return redirect(url_for('admin.account_edit', user_id=user.id))
+        user.username = form.username.data
+        user.email = form.email.data
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.phone = form.phone.data
+        user.is_active = form.is_active.data
+        role = Role.query.filter_by(name=form.role.data).first()
+        if role:
+            user.roles = [role]
+        if form.reset_password.data:
+            user.set_password('password123')
+        db.session.commit()
+        flash('Account updated!', 'success')
+        return redirect(url_for('admin.accounts'))
+    if request.method == 'GET':
+        form.role.data = user.primary_role
+    return render_template('admin/account_form.html', form=form, user=user)
+
+
+@admin_bp.route('/accounts/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def account_delete(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash('You cannot delete your own account.', 'danger')
+        return redirect(url_for('admin.accounts'))
+    if user.is_admin:
+        admin_count = User.query.join(User.roles).filter(Role.name == 'admin').count()
+        if admin_count <= 1:
+            flash('Cannot delete the last admin account.', 'danger')
+            return redirect(url_for('admin.accounts'))
+    if user.profile_image and user.profile_image != 'default.png':
+        delete_upload(user.profile_image)
+    db.session.delete(user)
+    db.session.commit()
+    flash('Account deleted.', 'success')
+    return redirect(url_for('admin.accounts'))

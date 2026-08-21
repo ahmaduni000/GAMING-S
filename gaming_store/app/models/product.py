@@ -73,6 +73,16 @@ class Product(db.Model):
         return self.price
 
     @property
+    def discount_percent_calc(self):
+        """Calculate discount percentage from price and discount_price.
+        Falls back to the stored discount_percent if prices aren't set."""
+        if self.price and self.discount_price and self.discount_price < self.price:
+            return round(((self.price - self.discount_price) / self.price) * 100)
+        if self.discount_percent:
+            return int(self.discount_percent)
+        return 0
+
+    @property
     def primary_image(self):
         img = self.images.filter_by(is_primary=True).first()
         if img:

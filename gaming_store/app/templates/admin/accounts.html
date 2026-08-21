@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Manage Accounts - GameZone Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3 admin-sidebar">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-lg-9 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold"><i class="fas fa-user-shield me-2"></i>Manage Accounts</h2>
+                <a href="{{ url_for('admin.staff_add') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add New Account
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm glass-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in accounts %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ user.username }}</strong>
+                                                <div class="text-muted small">{{ user.email }}</div>
+                                                <div class="text-muted small">{{ user.full_name }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if user.is_admin %}
+                                        <span class="badge bg-danger">Admin</span>
+                                        {% elif user.is_staff %}
+                                        <span class="badge bg-warning text-dark">Staff</span>
+                                        {% elif user.is_technician_role %}
+                                        <span class="badge bg-info">Technician</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Customer</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('admin.account_edit', user_id=user.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if user.id != current_user.id %}
+                                        <form action="{{ url_for('admin.account_delete', user_id=user.id) }}" method="POST" class="d-inline"
+                                              onsubmit="return confirm('Delete this account? This cannot be undone.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not accounts %}
+                                <tr><td colspan="5" class="text-center text-muted py-4">No staff/admin accounts found</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
