@@ -4,35 +4,80 @@ Corrected WSGI file for PythonAnywhere deployment.
 PASTE THIS ENTIRE CONTENT into your PythonAnywhere WSGI file at:
     /var/www/gamingstore7683_pythonanywhere_com_wsgi.py
 
-It puts your project on sys.path and adds your virtualenv's site-packages
-so that `flask` (and all other dependencies) are importable. This fixes the
-"ModuleNotFoundError: No module named 'flask'" error.
+It auto-detects your project folder and virtualenv, puts them on sys.path,
+and loads your .env so that `flask` (and all other dependencies) are
+importable. This fixes the "ModuleNotFoundError: No module named 'flask'" error.
 
-Paths used:
-    Project root : /home/gamingstore7683/GAMING-S/gaming_store
-    Virtualenv   : /home/gamingstore7683/.virtualenvs/gamingstore
+You do NOT need to edit any paths below — it searches common locations.
 """
 
 import sys
 import os
 import glob
 
-# 1) Make sure the project root is importable
-PROJECT_ROOT = '/home/gamingstore7683/GAMING-S/gaming_store'
+HOME = '/home/gamingstore7683'
+
+# 1) Auto-detect the project root (the folder that contains run.py)
+CANDIDATE_ROOTS = [
+    os.path.join(HOME, 'GAMING-S', 'gaming_store'),
+    os.path.join(HOME, 'GAMING SW', 'gaming_store'),
+    os.path.join(HOME, 'gaming_store'),
+    os.path.join(HOME, 'GAMING-S'),
+    os.path.join(HOME, 'GAMING SW'),
+    os.path.join(HOME, 'mysite', 'gaming_store'),
+    os.path.join(HOME, 'mysite'),
+]
+PROJECT_ROOT = None
+for cand in CANDIDATE_ROOTS:
+    if os.path.exists(os.path.join(cand, 'run.py')):
+        PROJECT_ROOT = cand
+        break
+# Fallback: search one level deep under HOME for a folder containing run.py
+if PROJECT_ROOT is None:
+    for root, dirs, files in os.walk(HOME):
+        if 'run.py' in files and 'gaming_store' in root.split(os.sep):
+            PROJECT_ROOT = root
+            break
+
+if PROJECT_ROOT is None:
+    # Last resort: just use the most likely path
+    PROJECT_ROOT = os.path.join(HOME, 'GAMING-S', 'gaming_store')
+
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# 2) Add the virtualenv's site-packages to sys.path (works for venv & virtualenv)
-VENV_PATH = '/home/gamingstore7683/.virtualenvs/gamingstore'
-for sp in glob.glob(os.path.join(VENV_PATH, 'lib', 'python3.*', 'site-packages')):
-    if os.path.isdir(sp) and sp not in sys.path:
-        sys.path.insert(0, sp)
+# 2) Auto-detect the virtualenv and add its site-packages to sys.path
+CANDIDATE_VENVS = [
+    os.path.join(HOME, '.virtualenvs', 'gamingstore'),
+    os.path.join(HOME, 'venv'),
+    os.path.join(HOME, '.venv'),
+    os.path.join(PROJECT_ROOT, 'venv'),
+    os.path.join(PROJECT_ROOT, '.venv'),
+]
+VENV_PATH = None
+for cand in CANDIDATE_VENVS:
+    if os.path.isdir(cand):
+        VENV_PATH = cand
+        break
 
-# 2b) Bonus: run virtualenv's activate_this.py if it exists
-ACTIVATE_THIS = os.path.join(VENV_PATH, 'bin', 'activate_this.py')
-if os.path.exists(ACTIVATE_THIS):
-    with open(ACTIVATE_THIS) as f:
-        exec(f.read(), {'__file__': ACTIVATE_THIS})
+if VENV_PATH is None:
+    # Search .virtualenvs for any env
+    venvs_dir = os.path.join(HOME, '.virtualenvs')
+    if os.path.isdir(venvs_dir):
+        subs = [os.path.join(venvs_dir, d) for d in os.listdir(venvs_dir)
+                if os.path.isdir(os.path.join(venvs_dir, d))]
+        if subs:
+            VENV_PATH = subs[0]
+
+if VENV_PATH:
+    for sp in glob.glob(os.path.join(VENV_PATH, 'lib', 'python3.*', 'site-packages')):
+        if os.path.isdir(sp) and sp not in sys.path:
+            sys.path.insert(0, sp)
+    # Bonus: run virtualenv's activate_this.py if it exists
+    ACTIVATE_THIS = os.path.join(VENV_PATH, 'bin', 'activate_this.py')
+    if os.path.exists(ACTIVATE_THIS):
+        with open(ACTIVATE_THIS) as f:
+            exec(f.read(), {'__file__': ACTIVATE_THIS})
 
 # 3) Load environment variables from .env if present
 try:
