@@ -63,7 +63,11 @@ def cart():
     items = cart_obj.items.all() if cart_obj else []
     total = sum(item.subtotal for item in items)
     total_discount = sum(item.discount_amount for item in items)
-    return render_template('main/cart.html', items=items, total=total, total_discount=total_discount)
+    delivery_fee = 200
+    final_total = total + delivery_fee
+    return render_template('main/cart.html', items=items, total=total,
+                         total_discount=total_discount, delivery_fee=delivery_fee,
+                         final_total=final_total)
 
 
 @products_bp.route('/cart/add/<int:product_id>', methods=['POST'])
